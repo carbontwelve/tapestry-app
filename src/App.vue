@@ -1,31 +1,42 @@
 <template>
   <div id="app">
-
-    <NavBar></NavBar>
-
-
-    <h1>Hello World!</h1>
-    <p>
-      <router-link to="/">Go to Foo</router-link>
-      <router-link to="/bar">Go to Bar</router-link>
-    </p>
-    <router-view></router-view>
+    <Navbar :show="true"></Navbar>
+    <Sidebar :show="true"></Sidebar>
+    <section class="app-main">
+      <div class="container is-fluid is-marginless app-content">
+        <router-view></router-view>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
-import NavBar from './components/NavBar'
+import Navbar from './components/NavBar'
+import Sidebar from './components/Sidebar'
 export default {
   name: 'app',
   data () {
     return { parentMsg: 'yo' }
   },
   components: {
-    NavBar
+    Navbar,
+    Sidebar
   }
 }
 </script>
 
 <style lang="less">
   @import './assets/main.less';
+
+  .app-main{
+    padding-top: 50px;
+    margin-left: 180px;
+    transform: translateZ(0);
+  }
+
+  .app-navbar {
+    position: fixed;
+    min-width: 100%;
+    z-index: 1024;
+  }
 </style>

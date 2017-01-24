@@ -10,7 +10,8 @@ export var router = new Router({
   mode: 'history',
   routes: [
     {path: '/', component: Hello, meta: {requiresAuth: true}},
-    {path: '/login', component: Login}
+    {path: '/login', component: Login},
+    {path: '*', redirect: '/'}
   ]
 })
 
