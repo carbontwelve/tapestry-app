@@ -1,4 +1,4 @@
-// var STORAGE_KEY = 'sites'
+var STORAGE_KEY = 'sites'
 
 const types = {
   ADD_SITE: 'ADD_SITE',
@@ -9,7 +9,7 @@ const types = {
 
 const state = {
   selected: null,
-  all: [] // JSON.parse(window.localStorage.getItem(STORAGE_KEY || '[]'))
+  all: JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]')
 }
 
 const mutations = {
