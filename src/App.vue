@@ -13,6 +13,7 @@
 <script>
 import Navbar from './components/NavBar'
 import Sidebar from './components/Sidebar'
+import { mapState } from 'vuex'
 export default {
   name: 'app',
   data () {
@@ -21,6 +22,9 @@ export default {
   components: {
     Navbar,
     Sidebar
+  },
+  computed: {
+    ...mapState(['sites'])
   }
 }
 </script>
