@@ -7,19 +7,19 @@
 </template>
 
 <script type="text/babel">
-  var count = 1
-  export default {
-    name: 'my-component',
-    methods: {
-      test: function () {
-        count++
-        this.$store.dispatch('addSite', {count})
-      },
-      authenticate: function () {
-        this.axios.get('project/content-types').then((response) => {
-          console.log(response.data)
-        })
-      }
+    var count = 1
+    export default {
+        name: 'my-component',
+        methods: {
+            test: function () {
+                count++
+                this.$store.dispatch('addSite', {count})
+            },
+            authenticate: function () {
+                this.axios.get('project/content-types').then((response) => {
+                    console.log(response.data)
+                })
+            }
+        }
     }
-  }
 </script>

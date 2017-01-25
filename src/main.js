@@ -8,16 +8,16 @@ import store from './store'
 import App from './App'
 
 Vue.use(VueAxios, axios.create({
-  baseURL: 'http://127.0.0.1:8080/'
-  // timeout: 1000,
-  // headers: {'X-Custom-Header': 'foobar'}
+    baseURL: 'http://127.0.0.1:8080/'
+    // timeout: 1000,
+    // headers: {'X-Custom-Header': 'foobar'}
 }))
 
 /* eslint-disable no-new */
 const app = new Vue({
-  router,
-  store,
-  ...App
+    router,
+    store,
+    ...App
 })
 
 app.$mount('#app')
