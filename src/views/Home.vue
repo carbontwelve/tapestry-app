@@ -12,7 +12,10 @@
                 <td colspan="2">You have no sites set.</td>
             </tr>
             <tr v-for="item in sites.all">
-                <td>{{ item.name }}</td>
+                <td>
+                    <input name="selected" type="radio" :checked="isSelected(item)" value="1" @click="setSelected(item)" />
+                    {{ item.name }}
+                </td>
                 <td class="control">
                     <a class="button is-small">
                         <span class="icon is-small">
@@ -53,6 +56,15 @@
             },
             deleteSite: function (site) {
                 this.$store.dispatch('removeSite', site)
+            },
+            isSelected: function (site) {
+                if (this.sites.selected && site.name === this.sites.selected.name) {
+                    return true
+                }
+                return false
+            },
+            setSelected: function (site) {
+                this.$store.dispatch('setSelected', site)
             }
         }
     }
