@@ -7,9 +7,9 @@ const types = {
     SET_SELECTED: 'SET_SELECTED'
 }
 
-const state = {
+const state = (window.localStorage.getItem(SITES_STORAGE_KEY) !== null) ? JSON.parse(window.localStorage.getItem(SITES_STORAGE_KEY)) : {
     selected: null,
-    all: JSON.parse(window.localStorage.getItem(SITES_STORAGE_KEY) || '[]')
+    all: []
 }
 
 const mutations = {
@@ -22,17 +22,22 @@ const mutations = {
     [types.REMOVE_SITE] (state, site) {
         state.all.splice(state.all.indexOf(site), 1)
     },
-    [types.SET_SELECTED] (state, data) {
-        state.selected = data
+    [types.SET_SELECTED] (state, site) {
+        state.selected = site
     }
 }
 
 const actions = {
     addSite ({state, dispatch, commit}, payload) {
+        // @todo if this is the first site in the list then it should also be set to be the selected one
         commit(types.ADD_SITE, payload || {})
     },
     removeSite ({state, dispatch, commit}, payload) {
+        // @todo you shouldn't be able to remove the currently selected site, or the last site in the list
         commit(types.REMOVE_SITE, payload || {})
+    },
+    setSelected ({state, dispatch, commit}, payload) {
+        commit(types.SET_SELECTED, payload || null)
     }
 }
 
