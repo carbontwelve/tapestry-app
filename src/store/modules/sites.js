@@ -1,3 +1,4 @@
+import Site from '../../models/site'
 export var SITES_STORAGE_KEY = 'sites'
 
 const types = {
@@ -10,6 +11,13 @@ const types = {
 const state = (window.localStorage.getItem(SITES_STORAGE_KEY) !== null) ? JSON.parse(window.localStorage.getItem(SITES_STORAGE_KEY)) : {
     selected: null,
     all: []
+}
+
+// Mutate the "all" state so that each item is an instance of Site
+if (state.all.length > 0) {
+    for (var i = 0; i <= state.all.length - 1; i++) {
+        state.all[i] = new Site(state.all[i])
+    }
 }
 
 const mutations = {
@@ -29,8 +37,12 @@ const mutations = {
 
 const actions = {
     addSite ({state, dispatch, commit}, payload) {
-        // @todo if this is the first site in the list then it should also be set to be the selected one
         commit(types.ADD_SITE, payload || {})
+
+        // If this is the first site then it needs to be set as the selected site
+        if (state.all.length === 1) {
+            dispatch('setSelected', payload)
+        }
     },
     removeSite ({state, dispatch, commit}, payload) {
         // @todo you shouldn't be able to remove the currently selected site, or the last site in the list

@@ -40,3 +40,11 @@
         }
     }
 </script>
+
+<style lang="less">
+    .app-navbar {
+        position: fixed;
+        min-width: 100%;
+        z-index: 1024;
+    }
+</style>
