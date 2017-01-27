@@ -2,6 +2,7 @@ import Moment from 'moment'
 import sha1 from 'sha1'
 import axios from 'axios'
 
+// @todo add uuid (needs a uuid lib)
 export default function (attr) {
     this.name = attr.name || ''
     this.url = attr.url || ''
