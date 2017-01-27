@@ -3,6 +3,7 @@
         <table class="table">
             <thead>
             <tr>
+                <th width="25">&nbsp;</th>
                 <th><abbr title="Site name">Project</abbr></th>
                 <th width="200"><abbr title="Created date" class="has-text-centered is-block">Created</abbr></th>
                 <th width="100"><abbr title="Available actions" class="has-text-centered is-block">Actions</abbr></th>
@@ -10,9 +11,13 @@
             </thead>
             <tbody>
             <tr v-if="sites.all.length < 1">
-                <td colspan="3">You have no sites set.</td>
+                <td colspan="4">You have no sites set.</td>
             </tr>
             <tr v-for="item in sites.all">
+                <td class="has-text-centered">
+                    <span v-if="item.validateJWT()">Y</span>
+                    <span v-else>N</span>
+                </td>
                 <td class="control">
                     <label class="radio">
                         <input name="selected" type="radio" :checked="isSelected(item)" @click="setSelected(item)" />

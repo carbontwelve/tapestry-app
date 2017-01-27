@@ -1,6 +1,7 @@
 import Moment from 'moment'
 import sha1 from 'sha1'
 import axios from 'axios'
+import {jws, b64utoutf8} from 'jsrsasign'
 
 // @todo add uuid (needs a uuid lib)
 export default function (attr) {
@@ -20,6 +21,17 @@ export default function (attr) {
     this.setJWT = function (token) {
         this.token = token
         this.token_retrieved_at = Date.now()
+    }
+
+    this.validateJWT = function () {
+        if (this.token.length < 1) {
+            return false
+        }
+        var payload = jws.JWS.readSafeJSONString(b64utoutf8(this.token.split('.')[1]))
+        if ((payload.exp * 1000) < Date.now()) {
+            return false
+        }
+        return true
     }
 
     // Initiate Hello World with the API endpoint
