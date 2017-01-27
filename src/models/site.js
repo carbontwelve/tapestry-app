@@ -23,6 +23,7 @@ export default function (attr) {
         this.token_retrieved_at = Date.now()
     }
 
+    // Returns true if the jwt token is still valid within its expirey date
     this.validateJWT = function () {
         if (this.token.length < 1) {
             return false

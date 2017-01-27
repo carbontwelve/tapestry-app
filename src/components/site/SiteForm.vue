@@ -1,72 +1,76 @@
 <template>
-    <div class="tile is-ancestor">
-        <div class="tile is-parent">
-            <article class="tile is-child box"><h1 class="title">Add new Tapestry API endpoint</h1>
-                <div class="block">
-                    <!-- API URL -->
-                    <div class="control is-horizontal">
-                        <div class="control-label"><label class="label">API URL</label></div>
-                        <p class="control has-icon has-icon-right">
-                            <input class="input" type="text" :class="{'is-danger': apiError, 'is-success': validUrl}" placeholder="http://api.example.com" :disabled="stage!='api_url'" v-model="site.url" @change="checkAPI" />
-                            <span class="icon is-small">
-                                <i class="fa fa-spinner fa-spin" v-if="loadingApiUrl"></i>
-                                <i class="fa fa-warning" v-if="apiError"></i>
-                                <i class="fa fa-check" v-if="validUrl"></i>
-                            </span>
+    <article class="tile is-child box">
+        <h1 class="title">Add new Tapestry API endpoint</h1>
+        <div class="block">
+            <!-- API URL -->
+            <div class="control is-horizontal">
+                <div class="control-label"><label class="label">API URL</label></div>
+                <p class="control has-icon has-icon-right">
+                    <input class="input" type="text" :class="{'is-danger': apiError, 'is-success': validUrl}" placeholder="http://api.example.com" :disabled="stage!='api_url'" v-model="site.url" @change="checkAPI" />
+                    <span class="icon is-small">
+                        <i class="fa fa-spinner fa-spin" v-if="loadingApiUrl"></i>
+                        <i class="fa fa-warning" v-if="apiError"></i>
+                        <i class="fa fa-check" v-if="validUrl"></i>
+                    </span>
+                </p>
+            </div>
+
+            <div class="control is-horizontal" v-if="apiError">
+                <div class="control-label">&nbsp;</div>
+                <p class="control">
+                    <span class="help is-danger">{{ apiError }}</span>
+                </p>
+            </div>
+            <!-- ./ API URL -->
+
+            <div class="control is-horizontal" v-if="validUrl">
+                <div class="control-label">&nbsp;</div>
+                <div class="control">
+                    <div class="panel is-full-width">
+                        <p class="panel-heading">
+                            Website Details
                         </p>
-                    </div>
+                        <div class="panel-block">
+                            <p><strong>Tapestry:</strong> {{ site.api.tapestryVersion }}</p>
 
-                    <div class="control is-horizontal" v-if="apiError">
-                        <div class="control-label">&nbsp;</div>
-                        <p class="control">
-                            <span class="help is-danger">{{ apiError }}</span>
-                        </p>
-                    </div>
-                    <!-- ./ API URL -->
-
-                    <div class="control is-horizontal" v-if="validUrl">
-                        <div class="control-label">&nbsp;</div>
-                        <div class="control">
-                            <div class="panel is-full-width">
-                                <p class="panel-heading">
-                                    Website Details
-                                </p>
-                                <div class="panel-block">
-                                    <p><strong>Tapestry:</strong> {{ site.api.tapestryVersion }}</p>
-
-                                </div>
-                                <div class="panel-block">
-                                    <p><strong>Site Name</strong>: {{ site.name }}</p>
-                                </div>
-                            </div>
                         </div>
-                    </div>
-
-                    <!-- API Authentication -->
-                    <div class="control is-horizontal" v-if="validUrl">
-                        <div class="control-label"><label class="label">Authentication</label></div>
-                        <div class="control is-grouped">
-                            <p class="control is-expanded">
-                                <input type="text" placeholder="Username" class="input" v-model="authDetails.username" :disabled="loadingAuthUrl"/>
-                            </p>
-                            <p class="control is-expanded">
-                                <input type="password" placeholder="Password" class="input" v-model="authDetails.password" :disabled="loadingAuthUrl" @keyup.enter="submitForm"/>
-                            </p>
-                        </div>
-                    </div>
-                    <!-- ./ API Authentication -->
-
-                    <div class="control is-horizontal">
-                        <div class="control-label"><label class="label"></label></div>
-                        <div class="control">
-                            <button :class="{'is-loading': loadingAuthUrl}" class="button is-primary" :disabled="!canSave" @click="submitForm">Save</button>
-                            <button class="button is-link">Cancel</button>
+                        <div class="panel-block">
+                            <p><strong>Site Name</strong>: {{ site.name }}</p>
                         </div>
                     </div>
                 </div>
-            </article>
+            </div>
+
+            <!-- API Authentication -->
+            <div class="control is-horizontal" v-if="validUrl">
+                <div class="control-label"><label class="label">Authentication</label></div>
+                <div class="control is-grouped">
+                    <p class="control is-expanded">
+                        <input type="text" placeholder="Username" class="input" v-model="authDetails.username" :disabled="loadingAuthUrl"/>
+                    </p>
+                    <p class="control is-expanded">
+                        <input type="password" placeholder="Password" class="input" v-model="authDetails.password" :disabled="loadingAuthUrl" @keyup.enter="submitForm"/>
+                    </p>
+                </div>
+            </div>
+
+            <div class="control is-horizontal" v-if="authError">
+                <div class="control-label">&nbsp;</div>
+                <p class="control">
+                    <span class="help is-danger">{{ authError }}</span>
+                </p>
+            </div>
+            <!-- ./ API Authentication -->
+
+            <div class="control is-horizontal">
+                <div class="control-label"><label class="label"></label></div>
+                <div class="control">
+                    <button :class="{'is-loading': loadingAuthUrl}" class="button is-primary" :disabled="!canSave" @click="submitForm">Save</button>
+                    <button class="button is-link">Cancel</button>
+                </div>
+            </div>
         </div>
-    </div>
+    </article>
 </template>
 
 <script type="text/babel">
@@ -113,7 +117,7 @@
                     if (d.jsonapi && d.jsonapi.version && d.data && d.data.tapestryVersion) {
                         this.stage = 'auth'
                         this.validUrl = true
-                        this.site.name = d.data.siteName
+                        this.site.name = this.site.url
                         this.site.api.jsonApiVersion = d.jsonapi.version
                         this.site.api.tapestryVersion = d.data.tapestryVersion
                         return
