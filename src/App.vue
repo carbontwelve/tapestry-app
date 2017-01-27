@@ -11,7 +11,7 @@
     </div>
 </template>
 
-<script>
+<script type="text/babel">
     import Navbar from './components/layout/NavBar'
     import Sidebar from './components/layout/Sidebar'
     import Topbar from './components/layout/Topbar'

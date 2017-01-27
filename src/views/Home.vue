@@ -44,7 +44,7 @@
     </div>
 </template>
 
-<script>
+<script type="text/babel">
     import { mapState } from 'vuex'
     import Site from '../models/site'
     import SiteForm from '../components/site/SiteForm'

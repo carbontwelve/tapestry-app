@@ -1,7 +1,7 @@
 <template>
     <div class="tile is-ancestor">
         <div class="tile is-parent">
-            <article class="tile is-child box"><h1 class="title">Site</h1>
+            <article class="tile is-child box"><h1 class="title">Add new Tapestry API endpoint</h1>
                 <div class="block">
                     <!-- API URL -->
                     <div class="control is-horizontal">
@@ -46,17 +46,11 @@
                     <div class="control is-horizontal" v-if="validUrl">
                         <div class="control-label"><label class="label">Authentication</label></div>
                         <div class="control is-grouped">
-                            <p class="control is-expanded has-icon has-icon-right">
+                            <p class="control is-expanded">
                                 <input type="text" placeholder="Username" class="input" v-model="authDetails.username" :disabled="loadingAuthUrl"/>
-                                <span class="icon is-small">
-                                    <i class="fa fa-check"></i>
-                                </span>
                             </p>
-                            <p class="control is-expanded has-icon has-icon-right">
+                            <p class="control is-expanded">
                                 <input type="password" placeholder="Password" class="input" v-model="authDetails.password" :disabled="loadingAuthUrl" @keyup.enter="submitForm"/>
-                                <span class="icon is-small">
-                                    <i class="fa fa-check"></i>
-                                </span>
                             </p>
                         </div>
                     </div>
@@ -110,29 +104,51 @@
 
                 this.loadingApiUrl = true
                 Promise.resolve(this.site.apiHandshake()).then((d) => {
-                    if (d.err !== null) {
+                    this.loadingApiUrl = false
+                    if (d.errors) {
                         this.apiError = 'Tapestry API could not be found at the URL you provided.'
-                        this.loadingApiUrl = false
                         return
                     }
 
-                    if (d.data.jsonapi && d.data.jsonapi.version && d.data && d.data.data.tapestryVersion) {
+                    if (d.jsonapi && d.jsonapi.version && d.data && d.data.tapestryVersion) {
                         this.stage = 'auth'
                         this.validUrl = true
-                        this.loadingApiUrl = false
-                        this.site.name = d.data.data.siteName
-                        this.site.api.jsonApiVersion = d.data.jsonapi.version
-                        this.site.api.tapestryVersion = d.data.data.tapestryVersion
+                        this.site.name = d.data.siteName
+                        this.site.api.jsonApiVersion = d.jsonapi.version
+                        this.site.api.tapestryVersion = d.data.tapestryVersion
+                        return
                     }
+                    this.apiError = 'An unknown error happened, oops.'
                 })
             },
             submitForm: function () {
                 if (!this.canSave) {
                     return
                 }
+                this.authError = ''
                 this.loadingAuthUrl = true
                 Promise.resolve(this.site.authenticate(this.authDetails)).then((d) => {
-                    console.log(d)
+                    if (d.errors) {
+                        if (d.errors.response && d.errors.response.status === 401) {
+                            this.loadingAuthUrl = false
+                            this.authError = 'The username or password supplied is incorrect, please try again.'
+                            return
+                        }
+                        if (d.errors.message) {
+                            this.loadingAuthUrl = false
+                            this.authError = d.errors.message
+                            return
+                        }
+                        this.authError = 'An unknown error happened, oops.'
+                        return
+                    }
+
+                    if (d.jsonapi && d.data && d.data.jwt) {
+                        this.site.setJWT(d.data.jwt)
+                        this.$store.dispatch('addSite', this.site)
+                        return
+                    }
+                    this.authError = 'An unknown error happened, oops.'
                 })
             }
         }

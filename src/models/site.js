@@ -16,15 +16,20 @@ export default function (attr) {
         return Moment(this.created_at).format(format || 'MMM Do YYYY')
     }
 
+    this.setJWT = function (token) {
+        this.token = token
+        this.token_retrieved_at = Date.now()
+    }
+
     // Initiate Hello World with the API endpoint
     this.apiHandshake = function () {
         var ajax = axios.create({
             baseURL: this.url
         })
         return ajax.get('handshake').then((response) => {
-            return {data: response.data, err: null}
+            return response.data
         }).catch(function (error) {
-            return {data: null, err: error.message}
+            return {data: null, errors: error}
         })
     }
 
@@ -37,9 +42,9 @@ export default function (attr) {
             username: auth.username,
             password: auth.password
         }).then((response) => {
-            return {data: response.data, err: null}
+            return response.data
         }).catch(function (error) {
-            return {data: null, err: error.message}
+            return {data: null, errors: error}
         })
     }
 }
