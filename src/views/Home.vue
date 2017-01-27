@@ -16,7 +16,7 @@
                 <td class="control">
                     <label class="radio">
                         <input name="selected" type="radio" :checked="isSelected(item)" @click="setSelected(item)" />
-                        {{ item.name }}
+                        {{ item.name }} &ndash; {{ item.url }}
                     </label>
                 </td>
                 <td class="has-text-centered">
