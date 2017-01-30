@@ -5,11 +5,6 @@
                 <p class="card-header-title">
                     Installation Wizard
                 </p>
-                <a class="card-header-icon">
-                  <span class="icon">
-                    <i class="fa fa-angle-down"></i>
-                  </span>
-                </a>
             </header>
             <div class="card-content">
                 <div class="content">
