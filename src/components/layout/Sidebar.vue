@@ -1,5 +1,5 @@
 <template>
-    <aside class="menu app-sidebar animated" :class="{ slideInLeft: show, slideOutLeft: !show }">
+    <aside class="menu app-sidebar animated" :class="{ slideInLeft: show, slideOutLeft: !show, 'is-hidden': displayMenu }">
         <p class="menu-label">
             General
         </p>
@@ -15,9 +15,18 @@
 </template>
 
 <script type="text/babel">
+    var isHidden = true
     export default {
         props: {
             show: Boolean
+        },
+        computed: {
+            displayMenu: function () {
+                if (this.show === true) {
+                    isHidden = false
+                }
+                return isHidden
+            }
         }
     }
 </script>
