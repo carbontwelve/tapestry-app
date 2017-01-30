@@ -10,7 +10,7 @@ import lazyLoading from './lazyLoading'
 export var router = new Router({
     mode: 'history',
     routes: [
-        {name: 'Home', path: '/', component: lazyLoading('Home')}, // , meta: {requiresAuth: true}},
+        {name: 'Home', path: '/', component: lazyLoading('Install')}, // , meta: {requiresAuth: true}},
         {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')}, // , meta: {requiresAuth: true}},
         {path: '/site', component: Hello},
         {path: '/login', component: Login},

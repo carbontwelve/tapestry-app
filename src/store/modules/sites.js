@@ -53,6 +53,8 @@ const actions = {
     }
 }
 
-const getters = {}
+const getters = {
+    totalSites: state => state.all.length
+}
 
 export default {state, mutations, actions, getters, types}

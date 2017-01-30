@@ -20,4 +20,12 @@ const app = new Vue({
     ...App
 })
 
+//
+// Check if we have any sites installed
+//
+
+if (store.getters.totalSites === 0) {
+    store.dispatch('setInstalled', false)
+}
+
 app.$mount('#app')
