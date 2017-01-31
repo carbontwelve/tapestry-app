@@ -7,27 +7,35 @@
                 </p>
             </header>
             <div class="card-content">
-                <div class="content">
+                <div class="content" v-if="(stage==='auth' || stage==='api')">
                     <p>
                         Welcome to Tapestry, before we can begin I need to know what API endpoint you would like to use:
                     </p>
                     <api-url-input v-on:completed="setSite" :isEnabled="(stage==='api')"></api-url-input>
                     <hr v-if="(stage==='auth')">
-                    <api-authenticate v-on:completed="setSite" :url="site.url" :isEnabled="(stage==='auth')" v-if="(stage==='auth')"></api-authenticate>
+                    <api-authenticate v-on:completed="setSite" :url="api.url" :isEnabled="(stage==='auth')" v-if="(stage==='auth')"></api-authenticate>
+                </div>
+                <div class="content" v-if="(stage==='project')">
+                    <p>
+                        It looks like you do not have any website projects configured, lets create one now:
+                    </p>
+                    <name-input v-on:completed="setProject"></name-input>
                 </div>
             </div>
             <footer class="card-footer">
                 <a class="card-footer-item" :class="{'is-disabled': !canContinue}" :disabled="!canContinue" @click="nextStage">Continue</a>
             </footer>
+            <progress class="progress is-small is-card-footer" :value="percentageComplete" max="100">{{ percentageComplete + '%'}}</progress>
         </div>
     </div>
 </template>
 
 <script type="text/babel">
-    import Site from '../models/site'
-    import {mapActions} from 'vuex'
+    import Api from '../models/api'
+    import {mapActions, mapGetters} from 'vuex'
     import ApiUrlInput from '../components/api/ApiUrlinput.vue'
     import ApiAuthenticate from '../components/api/ApiAuthenticate.vue'
+    import NameInput from '../components/project/NameInput.vue'
 
     export default {
         data () {
@@ -35,42 +43,69 @@
                 msg: 'Install Window',
                 stage: 'api',
                 canContinue: false,
-                site: new Site({name: 'Unnamed'})
+                api: new Api({name: 'Unnamed'}),
+                percentageComplete: 0
             }
         },
         components: {
             ApiUrlInput,
-            ApiAuthenticate
+            ApiAuthenticate,
+            NameInput
+        },
+        mounted () {
+            if (!this.isInstalling()) {
+                this.setInstalling(true)
+                return
+            }
+            if (this.totalApiEndpoints() > 0 && this.hasSelectedApiEndpoint()) {
+                this.stage = 'project'
+                this.percentageComplete = 75
+            }
+
+            console.log(this.axios.defaults)
         },
         methods: {
+            ...mapGetters([
+                'isInstalling',
+                'totalApiEndpoints',
+                'hasSelectedApiEndpoint'
+            ]),
             ...mapActions([
-                'toggleSidebar'
+                'toggleSidebar',
+                'setInstalling'
             ]),
             nextStage: function () {
+                this.percentageComplete += (100 / 4)
+                if (this.percentageComplete > 100) {
+                    this.percentageComplete = 100
+                }
                 this.canContinue = false
                 if (this.stage === 'api') {
                     this.stage = 'auth'
                     return
                 }
                 if (this.stage === 'auth') {
-                    this.$store.dispatch('addSite', this.site)
-                    this.$store.dispatch('setInstalled', true)
+                    this.$store.dispatch('addApiEndpoint', this.api)
+                    // this.$store.dispatch('setInstalled', true)
+                    this.stage = 'project'
                 }
             },
             setSite: function (payload) {
                 if (this.stage === 'api') {
-                    this.site.name = payload.url
-                    this.site.url = payload.url
-                    this.site.api.jsonApiVersion = payload.jsonApiVersion
-                    this.site.api.tapestryVersion = payload.tapestryVersion
+                    this.api.name = payload.url
+                    this.api.url = payload.url
+                    this.api.api.jsonApiVersion = payload.jsonApiVersion
+                    this.api.api.tapestryVersion = payload.tapestryVersion
                     this.canContinue = true
                 }
 
                 if (this.stage === 'auth') {
-                    this.site.setJWT(payload.jwt)
+                    this.api.setJWT(payload.jwt)
                     this.canContinue = true
                 }
-                console.log(this.site)
+            },
+            setProject: function (payload) {
+                this.canContinue = true
             }
         }
     }
@@ -79,5 +114,10 @@
 <style>
     a.card-footer-item.is-disabled{
         opacity: 0.5;
+    }
+    progress.is-card-footer{
+        position: absolute;
+        bottom: -2px;
+        z-index: -1;
     }
 </style>

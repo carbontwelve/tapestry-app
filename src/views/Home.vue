@@ -52,7 +52,7 @@
 
 <script type="text/babel">
     import { mapState } from 'vuex'
-    import Site from '../models/site'
+    import Api from '../models/api'
     import SiteForm from '../components/site/SiteForm'
 
     export default {
@@ -70,7 +70,7 @@
         },
         methods: {
             addSite: function () {
-                this.$store.dispatch('addSite', new Site({name: 'Hello world ' + this.sites.all.length}))
+                this.$store.dispatch('addSite', new Api({name: 'Hello world ' + this.sites.all.length}))
             },
             editSite: function (site) {
                 window.alert(site.hash)

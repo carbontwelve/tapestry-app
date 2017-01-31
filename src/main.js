@@ -7,11 +7,15 @@ import {router} from './router'
 import store from './store'
 import App from './App'
 
-Vue.use(VueAxios, axios.create({
-    baseURL: 'http://127.0.0.1:8080/'
-    // timeout: 1000,
-    // headers: {'X-Custom-Header': 'foobar'}
-}))
+//
+// Bootstrap Axios
+//
+var axiosSettings = {}
+if (store.getters.getSelectedApiEndpoint) {
+    axiosSettings.baseURL = store.getters.getSelectedApiEndpoint.url
+    axiosSettings.headers = {common: {'Authorization': 'JWT ' + store.getters.getSelectedApiEndpoint.token}}
+}
+Vue.use(VueAxios, axios.create(axiosSettings))
 
 /* eslint-disable no-new */
 const app = new Vue({
@@ -24,7 +28,7 @@ const app = new Vue({
 // Check if we have any sites installed
 //
 
-if (store.getters.totalSites === 0) {
+if (store.getters.totalApiEndpoints === 0) {
     store.dispatch('setInstalled', false)
 }
 

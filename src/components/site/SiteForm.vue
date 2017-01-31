@@ -74,14 +74,14 @@
 </template>
 
 <script type="text/babel">
-    import Site from '../../models/site'
+    import Api from '../../models/api'
     import validate from 'validate.js'
     export default {
         name: 'site-form',
         data: function () {
             return {
                 stage: 'api_url',
-                site: new Site({}),
+                site: new Api({}),
                 authDetails: {username: '', password: ''},
                 validUrl: false,
                 loadingApiUrl: false,
