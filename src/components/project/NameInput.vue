@@ -25,7 +25,6 @@
 
 <script type="text/babel">
     import validate from 'validate.js'
-    // import axios from 'axios'
     export default {
         name: 'name-input',
         data: function () {
@@ -47,8 +46,31 @@
                     this.errorMsg = validation.PROJECT_NAME[0]
                     return
                 }
-                this.$emit('completed', {
+
+                this.isLoading = true
+                var _self = this
+                this.axios.post('projects/check', {
                     name: this.name
+                }).then((response) => {
+                    _self.isLoading = false
+                    var d = response.data
+                    if (d.data.exists === false) {
+                        _self.isSuccess = true
+                        _self.$emit('completed', {
+                            name: this.name
+                        })
+                        return
+                    }
+                    _self.isError = true
+                    _self.errorMsg = 'A project with an identical name already exists.'
+                }).catch(function (error) {
+                    _self.isError = true
+                    _self.isLoading = false
+                    if (error.message) {
+                        _self.errorMsg = error.message
+                        return
+                    }
+                    _self.errorMsg = 'An unknown error happened while communicating with the API.'
                 })
             }
         }

@@ -21,6 +21,16 @@
                     </p>
                     <name-input v-on:completed="setProject"></name-input>
                 </div>
+                <div class="content" v-if="(stage==='sync')">
+                    <p class="has-text-centered">
+                        Creating project and syncing with API
+                    </p>
+                    <p class="has-text-centered">
+                        <span class="icon">
+                            <i class="fa fa-spin fa-spinner" aria-hidden="true"></i>
+                        </span>
+                    </p>
+                </div>
             </div>
             <footer class="card-footer">
                 <a class="card-footer-item" :class="{'is-disabled': !canContinue}" :disabled="!canContinue" @click="nextStage">Continue</a>
@@ -44,6 +54,7 @@
                 stage: 'api',
                 canContinue: false,
                 api: new Api({name: 'Unnamed'}),
+                projectName: '',
                 percentageComplete: 0
             }
         },
@@ -59,10 +70,8 @@
             }
             if (this.totalApiEndpoints() > 0 && this.hasSelectedApiEndpoint()) {
                 this.stage = 'project'
-                this.percentageComplete = 75
+                this.percentageComplete = 66
             }
-
-            console.log(this.axios.defaults)
         },
         methods: {
             ...mapGetters([
@@ -75,19 +84,21 @@
                 'setInstalling'
             ]),
             nextStage: function () {
-                this.percentageComplete += (100 / 4)
-                if (this.percentageComplete > 100) {
-                    this.percentageComplete = 100
-                }
                 this.canContinue = false
                 if (this.stage === 'api') {
                     this.stage = 'auth'
+                    this.percentageComplete = 33
                     return
                 }
                 if (this.stage === 'auth') {
                     this.$store.dispatch('addApiEndpoint', this.api)
                     // this.$store.dispatch('setInstalled', true)
                     this.stage = 'project'
+                    this.percentageComplete = 66
+                }
+                if (this.stage === 'project') {
+                    this.stage = 'sync'
+                    this.percentageComplete = 100
                 }
             },
             setSite: function (payload) {
@@ -106,6 +117,7 @@
             },
             setProject: function (payload) {
                 this.canContinue = true
+                this.projectName = payload.name
             }
         }
     }
