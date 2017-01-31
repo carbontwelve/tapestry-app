@@ -1,8 +1,8 @@
-import { SITES_STORAGE_KEY } from './modules/sites'
+import { API_STORAGE_KEY } from './modules/api'
 import { APP_STORAGE_KEY } from './modules/app'
 const localStoragePlugin = store => {
-    store.subscribe((mutation, { sites, app }) => {
-        window.localStorage.setItem(SITES_STORAGE_KEY, JSON.stringify(sites))
+    store.subscribe((mutation, { api, app }) => {
+        window.localStorage.setItem(API_STORAGE_KEY, JSON.stringify(api))
         window.localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(app))
     })
 }

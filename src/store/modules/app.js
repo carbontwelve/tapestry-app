@@ -2,6 +2,7 @@ export var APP_STORAGE_KEY = 'app'
 
 const state = (window.localStorage.getItem(APP_STORAGE_KEY) !== null) ? JSON.parse(window.localStorage.getItem(APP_STORAGE_KEY)) : {
     isInstalled: false,
+    isInstalling: false,
     device: {
         isMobile: false,
         isTablet: false
@@ -15,6 +16,7 @@ const state = (window.localStorage.getItem(APP_STORAGE_KEY) !== null) ? JSON.par
 const types = {
     TOGGLE_SIDEBAR: 'TOGGLE_SIDEBAR',
     SET_INSTALLED: 'SET_INSTALLED',
+    SET_INSTALLING: 'SET_INSTALLING',
     RESET_APP: 'RESET_APP'
 }
 
@@ -35,6 +37,9 @@ const mutations = {
     [types.SET_INSTALLED] (state, payload) {
         state.isInstalled = payload
     },
+    [types.SET_INSTALLING] (state, payload) {
+        state.isInstalling = payload
+    },
     [types.RESET_APP] (state) {
         state.isInstalled = false
         state.device.isMobile = false
@@ -42,7 +47,6 @@ const mutations = {
         state.sidebar.opened = false
         state.sidebar.hidden = false
     }
-
 }
 
 const actions = {
@@ -52,12 +56,14 @@ const actions = {
         if (payload === false) {
             commit(types.RESET_APP)
         }
-    }
+    },
+    setInstalling: ({commit}, payload) => commit(types.SET_INSTALLING, payload)
 }
 
 const getters = {
     sidebar: state => state.sidebar,
-    isInstalled: state => state.isInstalled
+    isInstalled: state => state.isInstalled,
+    isInstalling: state => state.isInstalling
 }
 
 export default {state, mutations, actions, getters, types}
