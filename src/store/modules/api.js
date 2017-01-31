@@ -59,7 +59,17 @@ const actions = {
 const getters = {
     totalApiEndpoints: state => state.all.length,
     hasSelectedApiEndpoint: state => state.selected !== null,
-    getSelectedApiEndpoint: state => state.selected
+    getSelectedApiEndpoint: state => state.selected,
+    listApiEndpoints: state => {
+        let endpoints = []
+        for (var i = 0; i < state.all.length; i++) {
+            endpoints.push({
+                uuid: state.all[i].uuid,
+                url: state.all[i].url
+            })
+        }
+        return endpoints
+    }
 }
 
 export default {state, mutations, actions, getters, types}

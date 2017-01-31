@@ -15,12 +15,18 @@
                     <hr v-if="(stage==='auth')">
                     <api-authenticate v-on:completed="setSite" :url="api.url" :isEnabled="(stage==='auth')" v-if="(stage==='auth')"></api-authenticate>
                 </div>
-                <div class="content" v-if="(stage==='project')">
+                <div class="content" v-if="(stage==='create-project')">
                     <p>
                         It looks like you do not have any website projects configured, lets create one now:
                     </p>
                     <name-input v-on:completed="setProject"></name-input>
                 </div>
+                <div class="content" v-if="(stage==='select-project')">
+                    <p>
+                        You have {{ totalProjects() }} projects configured, please select one to begin working on from the drop down below:
+                    </p>
+                </div>
+
                 <div class="content" v-if="(stage==='sync')">
                     <p class="has-text-centered">
                         Creating project and syncing with API
@@ -42,12 +48,13 @@
 
 <script type="text/babel">
     import Api from '../models/api'
-    import {mapActions, mapGetters} from 'vuex'
+    import {mapState, mapActions, mapGetters} from 'vuex'
     import ApiUrlInput from '../components/api/ApiUrlinput.vue'
     import ApiAuthenticate from '../components/api/ApiAuthenticate.vue'
     import NameInput from '../components/project/NameInput.vue'
 
     export default {
+        computed: mapState(['projects']),
         data () {
             return {
                 msg: 'Install Window',
@@ -69,8 +76,12 @@
                 return
             }
             if (this.totalApiEndpoints() > 0 && this.hasSelectedApiEndpoint()) {
-                this.stage = 'project'
                 this.percentageComplete = 66
+                if (this.totalProjects() > 0) {
+                    this.stage = 'select-project'
+                    return
+                }
+                this.stage = 'create-project'
             }
         },
         methods: {
@@ -83,7 +94,11 @@
                 'toggleSidebar',
                 'setInstalling'
             ]),
-            nextStage: function () {
+            totalProjects () {
+                return this.projects.all.length
+            },
+            nextStage () {
+                var _vm = this
                 this.canContinue = false
                 if (this.stage === 'api') {
                     this.stage = 'auth'
@@ -92,16 +107,31 @@
                 }
                 if (this.stage === 'auth') {
                     this.$store.dispatch('addApiEndpoint', this.api)
-                    // this.$store.dispatch('setInstalled', true)
-                    this.stage = 'project'
-                    this.percentageComplete = 66
+                    Promise.all(this.$syncProjects()).then(() => {
+                        _vm.stage = 'select-project'
+                        _vm.percentageComplete = 66
+                        return
+                    })
+                    return
                 }
-                if (this.stage === 'project') {
+                if (this.stage === 'create-project') {
                     this.stage = 'sync'
+                    var _self = this
                     this.percentageComplete = 100
+                    this.axios.post('projects', {
+                        name: _self.projectName,
+                        clone: 'default'
+                    }).then((response) => {
+                        console.log(response)
+                    }).catch((error) => {
+                        if (error.message) {
+                            // _self.errorMsg = error.message
+                            return
+                        }
+                    })
                 }
             },
-            setSite: function (payload) {
+            setSite (payload) {
                 if (this.stage === 'api') {
                     this.api.name = payload.url
                     this.api.url = payload.url
@@ -115,7 +145,7 @@
                     this.canContinue = true
                 }
             },
-            setProject: function (payload) {
+            setProject (payload) {
                 this.canContinue = true
                 this.projectName = payload.name
             }

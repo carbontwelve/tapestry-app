@@ -1,10 +1,12 @@
 import Moment from 'moment'
 import sha1 from 'sha1'
+import uuidV1 from 'uuid'
 import axios from 'axios'
 import {jws, b64utoutf8} from 'jsrsasign'
 
 // @todo add uuid (needs a uuid lib)
 export default function (attr) {
+    this.uuid = attr.uuid || uuidV1()
     this.name = attr.name || ''
     this.url = attr.url || ''
     this.token = attr.token || ''

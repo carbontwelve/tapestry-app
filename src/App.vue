@@ -1,4 +1,5 @@
 <template>
+    <loading-screen ref="loadingScreen">
     <div id="app">
         <Navbar></Navbar>
         <Sidebar :show="sidebar.opened && !sidebar.hidden"></Sidebar>
@@ -15,29 +16,65 @@
             </div>
         </section>
     </div>
+    </loading-screen>
 </template>
 
 <script type="text/babel">
     import Navbar from './components/layout/NavBar'
     import Sidebar from './components/layout/Sidebar'
     import Topbar from './components/layout/Topbar'
-    import {mapState, mapGetters} from 'vuex'
+    import LoadingScreen from './components/layout/LoadingScreen'
+    import {mapGetters} from 'vuex'
     export default {
         name: 'app',
         data () {
             return {parentMsg: 'yo'}
         },
+        created () {
+            this.$nextTick(() => this.loadResources())
+        },
+        mounted () {
+
+        },
         components: {
             Navbar,
             Sidebar,
-            Topbar
+            Topbar,
+            LoadingScreen
         },
         computed: {
-            ...mapState(['sites']),
-            ...mapGetters({
-                sidebar: 'sidebar',
-                isInstalled: 'isInstalled'
-            })
+            // ...mapState(['sites']),
+            ...mapGetters([
+                'sidebar',
+                'isInstalled',
+                'totalApiEndpoints',
+                'hasSelectedApiEndpoint'
+            ])
+        },
+        methods: {
+            loadResources () {
+                const p = new Promise(function (resolve) {
+                    setTimeout(resolve, 1000)
+                })
+
+                this.$refs.loadingScreen.load(p)
+
+                p.then(() => {
+                    console.log('Boom')
+                })
+
+                // Check if we have any api endpoints installed
+                if (this.totalApiEndpoints === 0) {
+                    this.$store.dispatch('setInstalled', false)
+                }
+
+                //
+                // If we have api endpoints installed sync with their projects
+                //
+                if (this.totalApiEndpoints > 0) {
+                    this.$syncProjects()
+                }
+            }
         }
     }
 </script>

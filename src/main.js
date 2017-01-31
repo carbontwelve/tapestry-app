@@ -6,6 +6,7 @@ import VueAxios from 'vue-axios'
 import {router} from './router'
 import store from './store'
 import App from './App'
+import ApiSync from './services/api-sync'
 
 //
 // Bootstrap Axios
@@ -16,6 +17,7 @@ if (store.getters.getSelectedApiEndpoint) {
     axiosSettings.headers = {common: {'Authorization': 'JWT ' + store.getters.getSelectedApiEndpoint.token}}
 }
 Vue.use(VueAxios, axios.create(axiosSettings))
+Vue.use(ApiSync)
 
 /* eslint-disable no-new */
 const app = new Vue({
@@ -23,13 +25,5 @@ const app = new Vue({
     store,
     ...App
 })
-
-//
-// Check if we have any sites installed
-//
-
-if (store.getters.totalApiEndpoints === 0) {
-    store.dispatch('setInstalled', false)
-}
-
 app.$mount('#app')
+
