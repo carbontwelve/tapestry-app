@@ -1,5 +1,4 @@
 <template>
-
     <!-- API Authentication -->
     <div class="api-authentication">
         <div class="control is-horizontal">
@@ -22,7 +21,6 @@
         </div>
     </div>
     <!-- ./ API Authentication -->
-
 </template>
 
 <script type="text/babel">
@@ -75,7 +73,6 @@
                         _self.$emit('completed', {
                             jwt: d.data.jwt
                         })
-                        return
                     }
                 }).catch(function (error) {
                     _self.isError = true
