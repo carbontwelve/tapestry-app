@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <slot></slot>
+        <slot v-if="!loading"></slot>
         <transition name="component-fade">
             <div v-if="loading" class="loading">
                 <div class="message">{{loadingText}}</div>
@@ -9,7 +9,7 @@
     </div>
 </template>
 
-<script>
+<script type="text/babel">
 export default {
     props: {
         loadingText: {
