@@ -6,14 +6,16 @@ Vue.use(Router)
 import Hello from '../components/Hello'
 import Login from '../components/MyComponent'
 import lazyLoading from './lazyLoading'
+import store from '../store'
 
 export var router = new Router({
     mode: 'history',
     routes: [
-        {name: 'Home', path: '/', component: lazyLoading('Install')}, // , meta: {requiresAuth: true}},
+        {name: 'Home', path: '/', component: lazyLoading('Home')}, // , meta: {requiresAuth: true}},
         {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')}, // , meta: {requiresAuth: true}},
         {path: '/site', component: Hello},
         {path: '/login', component: Login},
+        {name: 'Install', path: '/install', component: lazyLoading('Install')},
         {path: '*', redirect: { name: 'Home' }}
     ]
 })
@@ -21,6 +23,13 @@ export var router = new Router({
 // Authentication Service
 import Auth from '../services/auth'
 router.beforeEach((to, from, next) => {
+    if (!store.getters.isInstalled && to.name !== 'Install') {
+        return next('/install')
+    }
+    if (store.getters.isInstalled && to.name === 'Install') {
+        return next('/dashboard')
+    }
+
     if (to.meta.requiresAuth && !Auth.authenticated) {
         return next('/login')
     }
