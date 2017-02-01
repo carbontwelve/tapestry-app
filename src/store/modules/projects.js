@@ -5,7 +5,8 @@ const types = {
 
 const state = {
     all: [],
-    selected: null
+    selected: null,
+    lastSynchronized: null
 }
 
 const mutations = {
@@ -18,6 +19,9 @@ const mutations = {
 }
 
 const actions = {
+    syncProjects ({state, dispatch, commit}, payload) {
+
+    },
     addProject ({state, dispatch, commit}, payload) {
         commit(types.ADD_PROJECT, payload || {})
     },

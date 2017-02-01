@@ -12,27 +12,13 @@
 <script type="text/babel">
 export default {
     props: {
+        loading: {
+            type: Boolean,
+            default: false
+        },
         loadingText: {
             type: String,
             default: 'Loading...'
-        }
-    },
-    data () {
-        return {
-            loading: false
-        }
-    },
-    methods: {
-        load (promise) {
-            this.loading = true
-            const loadingFalse = () => {
-                this.loading = false
-            }
-            promise.then(
-                    loadingFalse,
-                    loadingFalse,
-            )
-            return promise
         }
     }
 }
@@ -44,10 +30,6 @@ export default {
     }
     .component-fade-enter, .component-fade-leave-active {
         opacity: 0;
-    }
-    .main {
-        position: relative;
-        min-height: 50px;
     }
     .loading {
         position: absolute;

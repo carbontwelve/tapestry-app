@@ -3,20 +3,20 @@ const apiSync = {}
 
 apiSync.install = function (Vue) {
     Vue.prototype.$syncProjects = function () {
-        var promises = []
-        var _vm = this
-        var apiEndpoints = this.$store.getters.listApiEndpoints
-        for (var apiKey = 0; apiKey < apiEndpoints.length; apiKey++) {
-            var apiEndpoint = apiEndpoints[apiKey]
+        let promises = []
+        let _vm = this
+        let apiEndpoints = this.$store.getters.listApiEndpoints
+        for (let apiKey = 0; apiKey < apiEndpoints.length; apiKey++) {
+            let apiEndpoint = apiEndpoints[apiKey]
             console.log('Syncing Projects with [' + apiEndpoint.url + ']')
             promises.push(this.axios({
                 method: 'get',
                 baseURL: apiEndpoint.url,
                 url: 'projects'
             }).then((response) => {
-                var d = response.data
+                let d = response.data
                 if (d.data && d.data.projects) {
-                    for (var i = 0; i < d.data.projects.length; i++) {
+                    for (let i = 0; i < d.data.projects.length; i++) {
                         let project = new Project(d.data.projects[i])
                         project.siteUUID = apiEndpoint.uuid
                         _vm.$store.dispatch('addProject', project)
