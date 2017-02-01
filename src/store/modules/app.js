@@ -62,7 +62,9 @@ const actions = {
         commit(types.SET_INSTALLED, payload)
         if (payload === false) {
             commit(types.RESET_APP)
+            return
         }
+        commit(types.TOGGLE_SIDEBAR, true)
     },
     setInstalling: ({commit}, payload) => commit(types.SET_INSTALLING, payload),
     toggleLoading: ({commit}, payload) => commit(types.TOGGLE_LOADING, payload)

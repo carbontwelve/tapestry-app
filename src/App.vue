@@ -57,6 +57,7 @@
                 // Check if we have any api endpoints installed
                 if (this.totalApiEndpoints === 0) {
                     this.$store.dispatch('setInstalled', false)
+                    _vm.$store.dispatch('toggleLoading', false)
                 }
 
                 //
@@ -72,7 +73,7 @@
     }
 </script>
 
-<style type="text/css" lang="less" rel="less">
+<style type="text/css" lang="less" rel="stylesheet/less">
     @import './assets/main.less';
 
     .app-main {

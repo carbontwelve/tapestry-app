@@ -25,6 +25,7 @@
                     <p>
                         You have {{ totalProjects() }} projects configured, please select one to begin working on from the drop down below:
                     </p>
+                    <project-select-input :projects="projects.all"  v-on:completed="setCurrentProject"></project-select-input>
                 </div>
 
                 <div class="content" v-if="(stage==='sync')">
@@ -41,7 +42,7 @@
             <footer class="card-footer">
                 <a class="card-footer-item" :class="{'is-disabled': !canContinue}" :disabled="!canContinue" @click="nextStage">Continue</a>
             </footer>
-            <progress class="progress is-small is-card-footer" :value="percentageComplete" max="100">{{ percentageComplete + '%'}}</progress>
+            <progress class="animated progress is-small is-card-footer" :value="percentageComplete" max="100">{{ percentageComplete + '%'}}</progress>
         </div>
     </div>
 </template>
@@ -52,8 +53,10 @@
     import ApiUrlInput from '../components/api/ApiUrlinput.vue'
     import ApiAuthenticate from '../components/api/ApiAuthenticate.vue'
     import NameInput from '../components/project/NameInput.vue'
+    import ProjectSelectInput from '../components/project/ProjectSelectInput.vue'
 
     export default {
+        name: 'install',
         computed: mapState(['projects']),
         data () {
             return {
@@ -62,13 +65,21 @@
                 canContinue: false,
                 api: new Api({name: 'Unnamed'}),
                 projectName: '',
+                selectedProject: 0,
                 percentageComplete: 0
             }
         },
         components: {
             ApiUrlInput,
             ApiAuthenticate,
-            NameInput
+            NameInput,
+            ProjectSelectInput
+        },
+        created () {
+            if (this.isInstalled()) {
+                this.$router.replace('dashboard')
+                return
+            }
         },
         mounted () {
             if (!this.isInstalling()) {
@@ -87,18 +98,26 @@
         methods: {
             ...mapGetters([
                 'isInstalling',
+                'isInstalled',
                 'totalApiEndpoints',
                 'hasSelectedApiEndpoint'
             ]),
             ...mapActions([
                 'toggleSidebar',
-                'setInstalling'
+                'setInstalling',
+                'setInstalled',
+                'setSelectedProjectById'
             ]),
             totalProjects () {
                 return this.projects.all.length
             },
+            completeInstall () {
+                this.setInstalling(false)
+                this.setInstalled(true)
+                this.$router.replace('dashboard')
+            },
             nextStage () {
-                var _vm = this
+                let _vm = this
                 this.canContinue = false
                 if (this.stage === 'api') {
                     this.stage = 'auth'
@@ -116,19 +135,26 @@
                 }
                 if (this.stage === 'create-project') {
                     this.stage = 'sync'
-                    var _self = this
+                    let _self = this
                     this.percentageComplete = 100
                     this.axios.post('projects', {
                         name: _self.projectName,
                         clone: 'default'
                     }).then((response) => {
                         console.log(response)
+                        _vm.completeInstall()
                     }).catch((error) => {
                         if (error.message) {
+                            // @todo something intelligent with the error
                             // _self.errorMsg = error.message
                             return
                         }
                     })
+                }
+                if (this.stage === 'select-project') {
+                    this.percentageComplete = 100
+                    this.setSelectedProjectById(this.selectedProject)
+                    this.completeInstall()
                 }
             },
             setSite (payload) {
@@ -148,6 +174,15 @@
             setProject (payload) {
                 this.canContinue = true
                 this.projectName = payload.name
+            },
+            setCurrentProject (payload) {
+                if (payload.selected === 'default') {
+                    this.canContinue = false
+                    this.selectedProject = 0
+                    return
+                }
+                this.canContinue = true
+                this.selectedProject = payload.selected
             }
         }
     }

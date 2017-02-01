@@ -5,8 +5,7 @@ const types = {
 
 const state = {
     all: [],
-    selected: null,
-    lastSynchronized: null
+    selected: null
 }
 
 const mutations = {
@@ -19,21 +18,25 @@ const mutations = {
 }
 
 const actions = {
-    syncProjects ({state, dispatch, commit}, payload) {
-
-    },
     addProject ({state, dispatch, commit}, payload) {
         commit(types.ADD_PROJECT, payload || {})
     },
     setSelectedProject ({state, dispatch, commit}, payload) {
         commit(types.SET_SELECTED, payload || null)
+    },
+    setSelectedProjectById ({state, dispatch, commit}, payload) {
+        let project = getters.getProjectById(state, getters)(payload)
+        commit(types.SET_SELECTED, project || null)
     }
 }
 
 const getters = {
     totalProjects: state => state.all.length,
     hasSelectedProject: state => state.selected !== null,
-    getSelectedProject: state => state.selected
+    getSelectedProject: state => state.selected,
+    getProjectById: (state, getters) => (id) => {
+        return state.all.find(p => p.id === id)
+    }
 }
 
 export default {state, mutations, actions, getters, types}
