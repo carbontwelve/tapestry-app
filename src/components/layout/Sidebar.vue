@@ -4,23 +4,27 @@
             General
         </p>
         <ul class="menu-list">
-            <li>
-                <router-link to="/" exact active-class="is-active">Projects</router-link>
-            </li>
-            <li>
-                <router-link to="dashboard" active-class="is-active">Dashboard</router-link>
-            </li>
+            <template v-for="item in menu.items">
+                <li>
+                    <router-link :to="{name: item.route}" exact>
+                        <span class="icon is-small"><i :class="['fa', item.meta.icon]"></i></span>
+                        <span class="menu-label">{{ item.meta.label || item.title }}</span>
+                    </router-link>
+                </li>
+            </template>
         </ul>
     </aside>
 </template>
 
 <script type="text/babel">
     var isHidden = true
+    import {mapState} from 'vuex'
     export default {
         props: {
             show: Boolean
         },
         computed: {
+            ...mapState(['menu']),
             displayMenu: function () {
                 if (this.show === true) {
                     isHidden = false
@@ -50,6 +54,19 @@
 
         .menu-label {
             padding-left: 5px;
+        }
+
+        .is-active .menu-label{
+            color: white;
+        }
+
+        .icon {
+            vertical-align: baseline;
+            &.is-angle {
+                position: absolute;
+                right: 10px;
+                transition: transform .377s ease;
+            }
         }
     }
 </style>

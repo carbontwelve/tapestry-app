@@ -8,9 +8,11 @@ import store from '../store'
 
 export var router = new Router({
     mode: 'history',
+    linkActiveClass: 'is-active',
+    scrollBehavior: () => ({ y: 0 }),
     routes: [
-        {name: 'Projects', path: '/', component: lazyLoading('Projects')}, // , meta: {requiresAuth: true}},
-        {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')}, // , meta: {requiresAuth: true}},
+        {name: 'Projects', path: '/', component: lazyLoading('Projects')},
+        {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')},
         {name: 'Install', path: '/install', component: lazyLoading('Install')},
         {path: '*', redirect: { name: 'Projects' }}
     ]

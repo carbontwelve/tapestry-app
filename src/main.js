@@ -7,6 +7,21 @@ import {router} from './router'
 import store from './store'
 import App from './App'
 import ApiSync from './services/api-sync'
+// import MenuItem from './models/MenuItem'
+// import lazyLoading from './router/lazyLoading'
+
+// function generateRoutesFromVueX (menu = [], routes = []) {
+//     for (let i = 0, l = menu.length; i < l; i++) {
+//         let item = menu[i]
+//         if (item.path) {
+//             routes.push(item)
+//         }
+//         if (!item.component && item.children.length > 0) {
+//             generateRoutesFromVueX(item.children, routes)
+//         }
+//     }
+//     return routes
+// }
 
 //
 // Bootstrap Axios
@@ -18,6 +33,15 @@ if (store.getters.getSelectedApiEndpoint) {
 }
 Vue.use(VueAxios, axios.create(axiosSettings))
 Vue.use(ApiSync)
+
+// let defaultRoutes = [
+//     new MenuItem({name: 'Projects', path: '/', component: lazyLoading('Projects')}),
+//     ...generateRoutesFromVueX(store.getters.getMenuItems),
+//     {name: 'Install', path: '/install', component: lazyLoading('Install')},
+//     {path: '*', redirect: { name: 'Projects' }}
+// ]
+
+// router.addRoutes(defaultRoutes)
 
 /* eslint-disable no-new */
 const app = new Vue({
