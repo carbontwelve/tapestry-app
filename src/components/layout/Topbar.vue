@@ -13,7 +13,7 @@
         </div>
     </nav>
 </template>
-<script>
+<script type="text/babel">
     import Breadcrumb from '../Breadcrumb'
     export default {
         components: {
@@ -36,8 +36,8 @@
             getList () {
                 let matched = this.$route.matched.filter(item => item.name)
                 let first = matched[0]
-                if (first && (first.name !== 'Home' || first.path !== '')) {
-                    matched = [{name: 'Home', path: '/'}].concat(matched)
+                if (first && (first.name !== 'Projects' || first.path !== '')) {
+                    matched = [{name: 'Projects', path: '/'}].concat(matched)
                 }
                 this.list = matched
             }

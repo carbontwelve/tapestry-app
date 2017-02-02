@@ -2,7 +2,7 @@
     <ol class="breadcrumb">
         <li v-for="item, index in list">
             <span class="active" v-if="isLast(index)">{{item.name}}</span>
-            <router-link :to="item.name" active-class="is-active-crumb" v-else>
+            <router-link :to="item.path" active-class="is-active-crumb" v-else>
                 {{item.name}}
             </router-link>
         </li>
@@ -36,7 +36,7 @@
     }
 </script>
 
-<style lang="scss">
+<style lang="scss" rel="stylesheet/less">
     .breadcrumb {
     // > \003e
     // / \2044
