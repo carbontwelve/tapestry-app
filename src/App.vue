@@ -68,6 +68,10 @@
                         _vm.$store.dispatch('toggleLoading', false)
                     })
                 }
+
+                //
+                // If we do not have a current project, but do
+                //
             }
         }
     }

@@ -1,3 +1,5 @@
+export var PROJECT_STORAGE_KEY = 'projects'
+
 const types = {
     ADD_PROJECT: 'ADD_PROJECT',
     SET_SELECTED: 'SET_SELECTED'
@@ -5,7 +7,7 @@ const types = {
 
 const state = {
     all: [],
-    selected: null
+    selected: (window.localStorage.getItem(PROJECT_STORAGE_KEY) !== null) ? JSON.parse(window.localStorage.getItem(PROJECT_STORAGE_KEY)) : null
 }
 
 const mutations = {

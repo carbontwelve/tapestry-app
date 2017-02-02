@@ -5,7 +5,7 @@
         </p>
         <ul class="menu-list">
             <li>
-                <router-link to="home" active-class="is-active">Home</router-link>
+                <router-link to="/" exact active-class="is-active">Projects</router-link>
             </li>
             <li>
                 <router-link to="dashboard" active-class="is-active">Dashboard</router-link>
