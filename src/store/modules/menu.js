@@ -19,6 +19,49 @@ const state = {
             meta: {
                 'icon': 'fa-tachometer'
             }
+        }),
+        new MenuItem({
+            title: 'Blog',
+            meta: {
+                'icon': 'fa-folder-o'
+            },
+            children: [
+                new MenuItem({title: 'Content', route: 'Dashboard'}),
+                new MenuItem({title: 'Categories', route: 'Dashboard'}),
+                new MenuItem({title: 'Tags', route: 'Dashboard'})
+            ]
+        }),
+        new MenuItem({
+            title: 'Pages',
+            meta: {
+                'icon': 'fa-folder-o'
+            },
+            children: [
+                new MenuItem({title: 'Content', route: 'Dashboard'}),
+                new MenuItem({title: 'Categories', route: 'Dashboard'}),
+                new MenuItem({title: 'Tags', route: 'Dashboard'})
+            ]
+        }),
+        new MenuItem({
+            title: 'Uploads',
+            route: 'Uploads',
+            meta: {
+                'icon': 'fa-files-o'
+            }
+        }),
+        new MenuItem({
+            title: 'File Explorer',
+            route: 'File Explorer',
+            meta: {
+                'icon': 'fa-cubes'
+            }
+        }),
+        new MenuItem({
+            title: 'Configuration',
+            route: 'Configuration',
+            meta: {
+                'icon': 'fa-cogs'
+            }
         })
     ]
 }

@@ -13,6 +13,9 @@ export var router = new Router({
     routes: [
         {name: 'Projects', path: '/', component: lazyLoading('Projects')},
         {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')},
+        {name: 'Uploads', path: '/uploads', component: lazyLoading('Dashboard')},
+        {name: 'File Explorer', path: '/file-explorer', component: lazyLoading('Dashboard')},
+        {name: 'Configuration', path: '/configuration', component: lazyLoading('Dashboard')},
         {name: 'Install', path: '/install', component: lazyLoading('Install')},
         {path: '*', redirect: { name: 'Projects' }}
     ]
