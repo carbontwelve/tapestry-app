@@ -1,16 +1,23 @@
 <template>
-    <div class="hello">
-        <h1>{{ msg }}</h1>
+    <div class="projects">
+        <div class="columns is-multiline">
+            <template v-for="project in projects.all">
+                <project-card :project="project"></project-card>
+            </template>
+        </div>
     </div>
 </template>
 
-<script>
+<script type="text/babel">
+    import ProjectCard from '../components/project/ProjectCard'
+    import {mapState} from 'vuex'
     export default {
         name: 'projects',
-        data () {
-            return {
-                msg: 'Home'
-            }
+        components: {
+            ProjectCard
+        },
+        computed: {
+            ...mapState(['projects'])
         }
     }
 </script>

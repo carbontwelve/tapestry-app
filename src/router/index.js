@@ -19,11 +19,19 @@ export var router = new Router({
 // Authentication Service
 import Auth from '../services/auth'
 router.beforeEach((to, from, next) => {
+    // If the user is not yet installed, redirect to the installer
     if (!store.getters.isInstalled && to.name !== 'Install') {
         return next('/install')
     }
+
+    // If the user is attempting to visit the installer, and we are already installed, redirect to Projects page
     if (store.getters.isInstalled && to.name === 'Install') {
-        return next('/dashboard')
+        return next('/')
+    }
+
+    // Until the user has a selected project limit them to only accessing the Projects page
+    if (!store.getters.hasSelectedProject && to.name !== 'Projects') {
+        return next('/')
     }
 
     if (to.meta.requiresAuth && !Auth.authenticated) {
