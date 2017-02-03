@@ -1,5 +1,5 @@
 <template>
-    <div class="nav-item">
+    <div class="nav-item" v-if="isInstalled">
         <a class="nav-item">
             <figure class="image is-16x16" style="margin-right: 8px;">
                 <img src="http://bulma.io/images/jgthms.png">
@@ -14,7 +14,7 @@
     export default {
         name: 'project-selector',
         computed: {
-            ...mapGetters(['getSelectedProject'])
+            ...mapGetters(['getSelectedProject', 'isInstalled'])
         }
     }
 </script>
