@@ -9,14 +9,15 @@ import store from '../store'
 export var router = new Router({
     mode: 'history',
     linkActiveClass: 'is-active',
-    scrollBehavior: () => ({ y: 0 }),
     routes: [
+        {name: 'Install', path: '/install', component: lazyLoading('Install')},
         {name: 'Projects', path: '/', component: lazyLoading('Projects')},
         {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')},
+        {name: 'ContentTypeContent', path: '/content-type/:content-uuid/content', component: lazyLoading('Dashboard')},
+        {name: 'ContentTypeTaxonomy', path: '/content-type/:content-uuid/taxonomy/:taxonomy-uuid', component: lazyLoading('Dashboard')},
         {name: 'Uploads', path: '/uploads', component: lazyLoading('Dashboard')},
-        {name: 'File Explorer', path: '/file-explorer', component: lazyLoading('Dashboard')},
+        {name: 'FileExplorer', path: '/file-explorer', component: lazyLoading('Dashboard')},
         {name: 'Configuration', path: '/configuration', component: lazyLoading('Dashboard')},
-        {name: 'Install', path: '/install', component: lazyLoading('Install')},
         {path: '*', redirect: { name: 'Projects' }}
     ]
 })
@@ -35,13 +36,11 @@ router.beforeEach((to, from, next) => {
     }
 
     // Until the user has a selected project limit them to only accessing the Projects page
-    if (!store.getters.hasSelectedProject && to.name !== 'Projects') {
+    if (store.getters.isInstalled && !store.getters.hasSelectedProject && to.name !== 'Projects') {
         return next('/')
     }
 
-    if (to.meta.requiresAuth && !Auth.authenticated) {
-        return next('/login')
-    }
+    // Else continue
     return next()
 })
 
