@@ -12,7 +12,14 @@
         </span>
         <div class="nav-right nav-menu">
             <project-selector></project-selector>
-            <a class="nav-item is-tab">Log out</a>
+
+            <span class="nav-item">
+              <a class="button" @click="nuke">
+                <span class="icon">
+                  <i class="fa fa-trash"></i>
+                </span>
+              </a>
+            </span>
         </div>
     </nav>
 </template>
@@ -23,6 +30,12 @@
         name: 'navbar',
         components: {
             ProjectSelector
+        },
+        methods: {
+            nuke () {
+                window.localStorage.clear()
+                window.location.reload()
+            }
         }
     }
 </script>

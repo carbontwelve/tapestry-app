@@ -23,7 +23,7 @@
                 </div>
                 <div class="content" v-if="(stage==='select-project')">
                     <p>
-                        You have {{ totalProjects() }} projects configured, please select one to begin working on from the drop down below:
+                        You have {{ totalProjects }} projects configured, please select one to begin working on from the drop down below:
                     </p>
                     <project-select-input :projects="projects.all"  v-on:completed="setCurrentProject"></project-select-input>
                 </div>
@@ -57,7 +57,16 @@
 
     export default {
         name: 'install',
-        computed: mapState(['projects']),
+        computed: {
+            ...mapState(['projects']),
+            ...mapGetters([
+                'isInstalling',
+                'isInstalled',
+                'totalApiEndpoints',
+                'totalProjects',
+                'hasSelectedApiEndpoint'
+            ])
+        },
         data () {
             return {
                 msg: 'Install Window',
@@ -76,19 +85,19 @@
             ProjectSelectInput
         },
         created () {
-            if (this.isInstalled()) {
+            if (this.isInstalled) {
                 this.$router.replace('dashboard')
                 return
             }
         },
         mounted () {
-            if (!this.isInstalling()) {
+            if (!this.isInstalling) {
                 this.setInstalling(true)
                 return
             }
-            if (this.totalApiEndpoints() > 0 && this.hasSelectedApiEndpoint()) {
+            if (this.totalApiEndpoints > 0 && this.hasSelectedApiEndpoint) {
                 this.percentageComplete = 66
-                if (this.totalProjects() > 0) {
+                if (this.totalProjects > 0) {
                     this.stage = 'select-project'
                     return
                 }
@@ -96,21 +105,12 @@
             }
         },
         methods: {
-            ...mapGetters([
-                'isInstalling',
-                'isInstalled',
-                'totalApiEndpoints',
-                'hasSelectedApiEndpoint'
-            ]),
             ...mapActions([
                 'toggleSidebar',
                 'setInstalling',
                 'setInstalled',
                 'setSelectedProjectById'
             ]),
-            totalProjects () {
-                return this.projects.all.length
-            },
             completeInstall () {
                 this.setInstalling(false)
                 this.setInstalled(true)
@@ -127,7 +127,11 @@
                 if (this.stage === 'auth') {
                     this.$store.dispatch('addApiEndpoint', this.api)
                     Promise.all(this.$syncProjects()).then(() => {
-                        _vm.stage = 'select-project'
+                        if (this.totalProjects > 0) {
+                            _vm.stage = 'select-project'
+                        } else {
+                            _vm.stage = 'create-project'
+                        }
                         _vm.percentageComplete = 66
                         return
                     })
@@ -141,8 +145,11 @@
                         name: _self.projectName,
                         clone: 'default'
                     }).then((response) => {
-                        console.log(response)
-                        _vm.completeInstall()
+                        let d = response.data
+                        Promise.all(this.$syncProjects()).then(function () {
+                            _vm.setSelectedProjectById(d.data.id)
+                            _vm.completeInstall()
+                        })
                     }).catch((error) => {
                         if (error.message) {
                             // @todo something intelligent with the error

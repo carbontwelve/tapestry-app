@@ -34,7 +34,11 @@
         },
         computed: {
             isSelected () {
-                return this.project.id === this.$store.getters.getSelectedProject.id
+                let selected = this.$store.getters.getSelectedProject
+                if (selected) {
+                    return this.project.id === this.$store.getters.getSelectedProject.id
+                }
+                return false
             }
         },
         methods: {

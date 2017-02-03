@@ -48,7 +48,7 @@
                 'sidebar',
                 'isInstalled',
                 'totalApiEndpoints',
-                'hasSelectedApiEndpoint'
+                'hasSelectedProject'
             ])
         },
         methods: {
@@ -64,8 +64,13 @@
                 // If we have api endpoints installed sync with their projects
                 //
                 if (this.totalApiEndpoints > 0) {
+                    _vm.$store.dispatch('setSelectedApiEndpoint')
                     Promise.all(this.$syncProjects()).then(() => {
-                        _vm.$store.dispatch('toggleLoading', false)
+                        if (_vm.hasSelectedProject) {
+                            Promise.resolve(this.$syncProject()).then(() => {
+                                _vm.$store.dispatch('toggleLoading', false)
+                            })
+                        }
                     })
                 }
 

@@ -6,7 +6,7 @@ const types = {
     ADD_API_ENDPOINT: 'ADD_API_ENDPOINT',
     MODIFY_API_ENDPOINT: 'MODIFY_API_ENDPOINT',
     REMOVE_API_ENDPOINT: 'REMOVE_SITE',
-    SET_SELECTED: 'SET_SELECTED'
+    SET_SELECTED_API_ENDPOINT: 'SET_SELECTED_API_ENDPOINT'
 }
 
 const state = (window.localStorage.getItem(API_STORAGE_KEY) !== null) ? JSON.parse(window.localStorage.getItem(API_STORAGE_KEY)) : {
@@ -31,7 +31,7 @@ const mutations = {
     [types.REMOVE_API_ENDPOINT] (state, site) {
         state.all.splice(state.all.indexOf(site), 1)
     },
-    [types.SET_SELECTED] (state, site) {
+    [types.SET_SELECTED_API_ENDPOINT] (state, site) {
         state.selected = site
         Vue.axios.defaults.baseURL = state.selected.url
         Vue.axios.defaults.headers.common['Authorization'] = 'JWT ' + state.selected.token
@@ -52,7 +52,11 @@ const actions = {
         commit(types.REMOVE_API_ENDPOINT, payload || {})
     },
     setSelectedApiEndpoint ({state, dispatch, commit}, payload) {
-        commit(types.SET_SELECTED, payload || null)
+        console.log('setSelectedApiEndpoint')
+        if (!payload && state.all.length > 0) {
+            payload = state.all[0]
+        }
+        commit(types.SET_SELECTED_API_ENDPOINT, payload || null)
     }
 }
 
