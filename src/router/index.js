@@ -13,8 +13,14 @@ export var router = new Router({
         {name: 'Install', path: '/install', component: lazyLoading('Install')},
         {name: 'Projects', path: '/', component: lazyLoading('Projects')},
         {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')},
-        {name: 'ContentTypeContent', path: '/content-type/:contentType/content', component: lazyLoading('Dashboard')},
-        {name: 'ContentTypeTaxonomy', path: '/content-type/:contentType/taxonomy/:taxonomy', component: lazyLoading('Dashboard')},
+        {
+            name: 'ContentType',
+            path: '/content-type/:contentType/',
+            children: [
+                {name: 'ContentTypeContent', path: 'content', component: lazyLoading('Dashboard'), meta: {label: ':contentType Content'}},
+                {name: 'ContentTypeTaxonomy', path: 'taxonomy/:taxonomy', component: lazyLoading('Dashboard'), meta: {label: ':contentType :taxonomy'}}
+            ]
+        },
         {name: 'Uploads', path: '/uploads', component: lazyLoading('Dashboard')},
         {name: 'FileExplorer', path: '/file-explorer', component: lazyLoading('Dashboard')},
         {name: 'Configuration', path: '/configuration', component: lazyLoading('Dashboard')},

@@ -1,5 +1,6 @@
 import Project from '../models/project'
 import MenuItem from '../models/MenuItem'
+import {capitalize} from '../strings'
 const apiSync = {}
 
 apiSync.install = function (Vue) {
@@ -56,14 +57,14 @@ apiSync.install = function (Vue) {
                 if (attr.taxonomies.length > 0) {
                     for (let taxonomyKey = 0; taxonomyKey <= attr.taxonomies.length - 1; taxonomyKey++) {
                         taxonomies.push(new MenuItem({
-                            title: attr.taxonomies[taxonomyKey],
+                            title: capitalize(attr.taxonomies[taxonomyKey]),
                             route: {name: 'ContentTypeTaxonomy', params: {contentType: d.data[i].attributes.name, taxonomy: attr.taxonomies[taxonomyKey]}}
                         }))
                     }
                 }
 
                 menu.push(new MenuItem({
-                    title: attr.name,
+                    title: capitalize(attr.name),
                     route: null,
                     meta: {
                         'api': d.data[i].links.self,

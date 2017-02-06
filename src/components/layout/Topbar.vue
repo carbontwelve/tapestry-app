@@ -15,6 +15,7 @@
 </template>
 <script type="text/babel">
     import Breadcrumb from '../Breadcrumb'
+    import {capitalize} from '../../strings'
     export default {
         components: {
             Breadcrumb
@@ -29,7 +30,10 @@
         },
         computed: {
             name () {
-                return this.$route.name
+                if (this.$route.meta && this.$route.meta.label) {
+                    return capitalize(this.$route.meta.label)
+                }
+                return capitalize(this.$route.name)
             }
         },
         methods: {
