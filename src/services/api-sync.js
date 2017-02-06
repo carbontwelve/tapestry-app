@@ -75,9 +75,7 @@ apiSync.install = function (Vue) {
                         ...taxonomies
                     ]
                 }))
-                console.log(menu)
             }
-            console.log('end')
             this.$store.dispatch('setMenuItems', menu)
         }).catch(() => {
             // @todo catch error and do something intelligent

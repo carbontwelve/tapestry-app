@@ -16,6 +16,28 @@
 <script type="text/babel">
     import Breadcrumb from '../Breadcrumb'
     import {capitalize} from '../../strings'
+
+    function identifyRouteLabel (currentRoute, route) {
+        let label = null
+        if (currentRoute.params) {
+            if (route && route.meta && route.meta.label) {
+                label = route.meta.label
+            } else if (currentRoute.meta && currentRoute.meta.label) {
+                label = currentRoute.meta.label
+            }
+            if (label !== null) {
+                Object.keys(currentRoute.params).forEach(key => {
+                    label = label.replace(':' + key, capitalize(currentRoute.params[key]))
+                })
+                return capitalize(label)
+            }
+        }
+        if (route && route.name) {
+            return capitalize(route.name)
+        }
+        return capitalize(currentRoute.name)
+    }
+
     export default {
         components: {
             Breadcrumb
@@ -30,18 +52,22 @@
         },
         computed: {
             name () {
-                if (this.$route.meta && this.$route.meta.label) {
-                    return capitalize(this.$route.meta.label)
-                }
-                return capitalize(this.$route.name)
+                return identifyRouteLabel(this.$route)
             }
         },
         methods: {
             getList () {
                 let matched = this.$route.matched.filter(item => item.name)
+                let _vm = this
+                matched = matched.map(function (obj) {
+                    return {
+                        route: {name: obj.name, params: (_vm.$route.params) ? _vm.$route.params : {}},
+                        label: identifyRouteLabel(_vm.$route, obj)
+                    }
+                })
                 let first = matched[0]
-                if (first && (first.name !== 'Projects' || first.path !== '')) {
-                    matched = [{name: 'Projects', path: '/'}].concat(matched)
+                if (first && (first.label !== 'Projects')) {
+                    matched = [{label: 'Projects', route: '/'}].concat(matched)
                 }
                 this.list = matched
             }
