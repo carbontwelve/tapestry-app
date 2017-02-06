@@ -41,6 +41,15 @@ apiSync.install = function (Vue) {
         }).then((response) => {
             let d = response.data
             let menu = []
+
+            menu.push(new MenuItem({
+                title: 'Dashboard',
+                route: 'Dashboard',
+                meta: {
+                    icon: 'fa-dashboard'
+                }
+            }))
+
             for (let i = 0; i <= d.data.length - 1; i++) {
                 let attr = d.data[i].attributes
                 let taxonomies = []
@@ -48,20 +57,20 @@ apiSync.install = function (Vue) {
                     for (let taxonomyKey = 0; taxonomyKey <= attr.taxonomies.length - 1; taxonomyKey++) {
                         taxonomies.push(new MenuItem({
                             title: attr.taxonomies[taxonomyKey],
-                            route: 'Dashboard' // @todo finish this
+                            route: {name: 'ContentTypeTaxonomy', params: {contentType: d.data[i].attributes.name, taxonomy: attr.taxonomies[taxonomyKey]}}
                         }))
                     }
                 }
 
                 menu.push(new MenuItem({
                     title: attr.name,
-                    route: 'Dashboard', // @todo finish this
+                    route: null,
                     meta: {
                         'api': d.data[i].links.self,
                         'icon': 'fa-folder-o'
                     },
                     children: [
-                        new MenuItem({title: 'Content', route: 'Dashboard'}), // @todo finish this
+                        new MenuItem({title: 'Content', route: {name: 'ContentTypeContent', params: {contentType: d.data[i].attributes.name}}}),
                         ...taxonomies
                     ]
                 }))

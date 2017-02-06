@@ -6,7 +6,7 @@
         <ul class="menu-list">
             <template v-for="item in menu.items">
                 <li>
-                    <router-link v-if="item.route" :to="{name: item.route}" exact>
+                    <router-link v-if="item.route" :to="((typeof item.route === 'string') ? {name: item.route} : item.route)" exact>
                         <span class="icon is-small"><i :class="['fa', item.meta.icon]"></i></span>
                         <span class="menu-label">{{ item.meta.label || item.title }}</span>
                     </router-link>
@@ -19,7 +19,7 @@
                     <template v-if="item.children && item.children.length > 0">
                         <ul>
                             <li v-for="childItem in item.children">
-                                <router-link :to="{name: childItem.route}" exact>
+                                <router-link :to="((typeof childItem.route === 'string') ? {name: childItem.route} : childItem.route)" exact>
                                     {{ childItem.meta && childItem.meta.label || childItem.title }}
                                 </router-link>
                             </li>

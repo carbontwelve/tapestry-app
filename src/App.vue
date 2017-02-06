@@ -73,10 +73,6 @@
                         }
                     })
                 }
-
-                //
-                // If we do not have a current project, but do have projects
-                //
             }
         }
     }
