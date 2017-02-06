@@ -18,7 +18,7 @@ export var router = new Router({
             path: '/content-type/:contentType/',
             meta: {label: ':contentType'},
             children: [
-                {name: 'ContentTypeContent', path: 'content', component: lazyLoading('Dashboard'), meta: {label: ':contentType Content'}},
+                {name: 'ContentTypeContent', path: 'content', component: lazyLoading('ContentTypeContent'), meta: {label: ':contentType Content'}},
                 {name: 'ContentTypeTaxonomy', path: 'taxonomy/:taxonomy', component: lazyLoading('Dashboard'), meta: {label: ':contentType :taxonomy'}}
             ]
         },
