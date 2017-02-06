@@ -3,6 +3,11 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
+const PassThrough = {
+    name: 'PassThrough',
+    template: '<router-view></router-view>'
+}
+
 import lazyLoading from './lazyLoading'
 import store from '../store'
 
@@ -16,6 +21,7 @@ export var router = new Router({
         {
             name: 'ContentType',
             path: '/content-type/:contentType/',
+            component: PassThrough,
             meta: {label: ':contentType'},
             children: [
                 {name: 'ContentTypeContent', path: 'content', component: lazyLoading('ContentTypeContent'), meta: {label: ':contentType Content'}},

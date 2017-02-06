@@ -71,7 +71,7 @@ apiSync.install = function (Vue) {
                         'icon': 'fa-folder-o'
                     },
                     children: [
-                        new MenuItem({title: 'Content', route: {name: 'ContentTypeContent', params: {contentType: d.data[i].attributes.name}}}),
+                        new MenuItem({title: 'Content', route: {name: 'ContentTypeContent', params: {contentType: d.data[i].attributes.name}}, meta: {api: d.data[i].links.self}}),
                         ...taxonomies
                     ]
                 }))

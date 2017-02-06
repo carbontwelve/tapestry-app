@@ -30,7 +30,6 @@
 
         methods: {
             isLast (index) {
-                console.log(index + ' ' + (this.list.length - 1) + ' ' + ((index === this.list.length - 1) ? 'true' : 'false'))
                 return index === this.list.length - 1
             }
         }
