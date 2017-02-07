@@ -2,7 +2,7 @@
     <div class="main">
         <slot v-if="!loading"></slot>
         <transition name="component-fade">
-            <div v-if="loading" class="loading">
+            <div v-if="loading" class="loading" :class="{'inside': inside}">
                 <div class="message">{{loadingText}}</div>
             </div>
         </transition>
@@ -19,12 +19,16 @@ export default {
         loadingText: {
             type: String,
             default: 'Loading...'
+        },
+        inside: {
+            type: Boolean,
+            default: false
         }
     }
 }
 </script>
 
-<style scoped>
+<style type="text/css" lang="less" rel="stylesheet/less">
     .component-fade-enter-active, .component-fade-leave-active {
         transition: opacity .3s ease;
     }
@@ -43,12 +47,18 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-    }
-    .loading .message {
-        background-color: #f4f4f4;
-        border-radius: 4px;
-        box-shadow: 0 1px 8px rgba(0,0,0,.15);
-        border: solid 1px #bbb;
-        padding: 10px 20px;
+
+        &.inside {
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .message {
+            background-color: #f4f4f4;
+            border-radius: 4px;
+            box-shadow: 0 1px 8px rgba(0,0,0,.15);
+            border: solid 1px #bbb;
+            padding: 10px 20px;
+        }
     }
 </style>
