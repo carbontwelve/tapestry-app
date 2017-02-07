@@ -58,6 +58,10 @@
         methods: {
             getList () {
                 let matched = this.$route.matched.filter(item => item.name)
+                // Filter out any ignored
+                matched = matched.filter(function (obj) {
+                    return !((obj.meta && obj.meta.ignore) && obj.meta.ignore === true)
+                })
                 let _vm = this
                 matched = matched.map(function (obj) {
                     return {

@@ -16,7 +16,15 @@ export var router = new Router({
     linkActiveClass: 'is-active',
     routes: [
         {name: 'Install', path: '/install', component: lazyLoading('Install')},
-        {name: 'Projects', path: '/', component: lazyLoading('Projects')},
+        {
+            path: '/',
+            component: PassThrough,
+            meta: {ignore: true},
+            children: [
+                {name: 'Projects', path: '', component: lazyLoading('Projects'), meta: {label: 'All Projects'}},
+                {name: 'InitProject', path: 'initiate', component: lazyLoading('InitiateProject'), meta: {label: 'Initiate New Project'}}
+            ]
+        },
         {name: 'Dashboard', path: '/dashboard', component: lazyLoading('Dashboard')},
         {
             name: 'ContentType',
