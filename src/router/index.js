@@ -32,7 +32,14 @@ export var router = new Router({
             component: PassThrough,
             meta: {label: ':contentType'},
             children: [
-                {name: 'ContentTypeContent', path: 'content', component: lazyLoading('ContentTypeContent'), meta: {label: ':contentType Content'}},
+                {
+                    path: 'content',
+                    component: PassThrough,
+                    children: [
+                        {name: 'ContentTypeContent', path: '', component: lazyLoading('ContentTypeContent'), meta: {label: ':contentType Content'}},
+                        {name: 'ContentTypeFileEditor', path: ':file', component: lazyLoading('FileEditor'), meta: {label: 'Edit File', parent: 'ContentTypeContent'}}
+                    ]
+                },
                 {name: 'ContentTypeTaxonomy', path: 'taxonomy/:taxonomy', component: lazyLoading('Dashboard'), meta: {label: ':contentType :taxonomy'}}
             ]
         },

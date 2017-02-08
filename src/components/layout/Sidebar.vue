@@ -19,7 +19,7 @@
                     <template v-if="item.children && item.children.length > 0">
                         <ul>
                             <li v-for="childItem in item.children">
-                                <router-link :to="((typeof childItem.route === 'string') ? {name: childItem.route} : childItem.route)" exact>
+                                <router-link :to="((typeof childItem.route === 'string') ? {name: childItem.route} : childItem.route)" >
                                     {{ childItem.meta && childItem.meta.label || childItem.title }}
                                 </router-link>
                             </li>

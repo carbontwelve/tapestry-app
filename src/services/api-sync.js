@@ -81,6 +81,30 @@ apiSync.install = function (Vue) {
             // @todo catch error and do something intelligent
         })
     }
+
+    Vue.prototype.$getProjectContentType = function () {
+        let selectedProject = this.$store.getters.getSelectedProject
+        console.log('Getting Content Type [' + selectedProject.id + '/' + this.$route.params.contentType + ']')
+        let ajaxPath = 'project/' + selectedProject.id + '/content-types/' + this.$route.params.contentType
+        return this.axios({
+            method: 'get',
+            url: ajaxPath
+        }).catch((err) => {
+            window.alert(err.message)
+        })
+    }
+
+    Vue.prototype.$getProjectFile = function () {
+        let selectedProject = this.$store.getters.getSelectedProject
+        console.log('Getting File [' + selectedProject.id + '/' + this.$route.params.contentType + '/' + this.$route.params.file + ']')
+        let ajaxPath = 'project/' + selectedProject.id + '/file/' + this.$route.params.file
+        return this.axios({
+            method: 'get',
+            url: ajaxPath
+        }).catch((err) => {
+            window.alert(err.message)
+        })
+    }
 }
 
 export default apiSync

@@ -63,12 +63,39 @@
                     return !((obj.meta && obj.meta.ignore) && obj.meta.ignore === true)
                 })
                 let _vm = this
+                // Convert to object or array (if has parent defined)
                 matched = matched.map(function (obj) {
+                    if (obj.meta && obj.meta.parent) {
+                        // ... line 33 https://github.com/vuejs/vue-router/blob/dev/src/components/link.js
+                        let { route } = _vm.$router.resolve({name: obj.meta.parent}, _vm.$route, false)
+                        return [
+                            {
+                                route: {name: route.name, params: (route.params) ? route.params : {}},
+                                label: identifyRouteLabel(_vm.$route, route)
+                            },
+                            {
+                                route: {name: obj.name, params: (_vm.$route.params) ? _vm.$route.params : {}},
+                                label: identifyRouteLabel(_vm.$route, obj)
+                            }
+                        ]
+                    }
                     return {
                         route: {name: obj.name, params: (_vm.$route.params) ? _vm.$route.params : {}},
                         label: identifyRouteLabel(_vm.$route, obj)
                     }
                 })
+                // Flatten matched, because if a route has a parent defined the mapping will replace an item
+                // with an array rather than an object, thus the requirement of flattening.
+                for (let i = matched.length; i > 0; i--) {
+                    if (Array.isArray(matched[i])) {
+                        let x = matched.splice(i, 1)
+                        let c = 1
+                        x[0].forEach((v) => {
+                            matched.splice(i + c, 0, v)
+                            c++
+                        })
+                    }
+                }
                 let first = matched[0]
                 if (first && (first.label !== 'Projects')) {
                     matched = [{label: 'Projects', route: '/'}].concat(matched)
