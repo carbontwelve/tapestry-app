@@ -14,7 +14,7 @@
     </nav>
 </template>
 <script type="text/babel">
-    import Breadcrumb from './Breadcrumb'
+    import Breadcrumb from '../UI/Breadcrumb'
     import {capitalize} from '../../strings'
 
     function identifyRouteLabel (currentRoute, route) {
