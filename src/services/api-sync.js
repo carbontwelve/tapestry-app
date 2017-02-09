@@ -91,6 +91,7 @@ apiSync.install = function (Vue) {
             url: ajaxPath
         }).catch((err) => {
             window.alert(err.message)
+            throw err
         })
     }
 
@@ -103,6 +104,28 @@ apiSync.install = function (Vue) {
             url: ajaxPath
         }).catch((err) => {
             window.alert(err.message)
+            throw err
+        })
+    }
+
+    Vue.prototype.$setProjectFile = function (f) {
+        // A file will only contain a link to self if it exists, we can PUT to this end point to update
+        // Otherwise we need to POST to /project/{projectUUID}/file
+        let selectedProject = this.$store.getters.getSelectedProject
+        let config = {
+            method: 'post',
+            url: 'project/' + selectedProject.id + '/file/',
+            data: {
+                file: f
+            }
+        }
+        if (f.links.self) {
+            config.method = 'put'
+            config.url = f.links.self
+        }
+        return this.axios(config).catch((err) => {
+            window.alert(err.message)
+            throw err
         })
     }
 }
