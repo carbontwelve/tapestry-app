@@ -33,7 +33,7 @@ apiSync.install = function (Vue) {
         return promises
     }
 
-    Vue.prototype.$syncProject = function () {
+    Vue.prototype.$getProject = function () {
         let selectedProject = this.$store.getters.getSelectedProject
         console.log('Syncing Project [' + selectedProject.id + ']')
         return this.axios({

@@ -67,7 +67,7 @@
                     _vm.$store.dispatch('setSelectedApiEndpoint')
                     Promise.all(this.$syncProjects()).then(() => {
                         if (_vm.hasSelectedProject) {
-                            Promise.resolve(this.$syncProject()).then(() => {
+                            Promise.resolve(this.$getProject()).then(() => {
                                 _vm.$store.dispatch('toggleLoading', false)
                             })
                         }

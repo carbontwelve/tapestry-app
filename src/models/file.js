@@ -20,11 +20,4 @@ export default function (file) {
     this.getContent = function () {
         return this.data.attributes.fileContent
     }
-
-    this.isPublished = function () {
-        if (!this.data.attributes.draft) {
-            return false
-        }
-        return this.data.attributes.draft
-    }
 }
