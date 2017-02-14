@@ -38,7 +38,7 @@
                     </tr>
                 </thead>
                 <tbody v-for="item in content">
-                    <TableRow :file="item"></TableRow>
+                    <TableRow :file="item" v-on:file-action="doFileAction"></TableRow>
                 </tbody>
             </table>
         </loading-screen>
@@ -68,6 +68,9 @@
             '$route': 'fetchData'
         },
         methods: {
+            doFileAction (e) {
+                console.log(e)
+            },
             fetchData () {
                 let _vm = this
                 this.$getProjectContentType().then((response) => {

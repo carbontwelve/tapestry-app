@@ -1,3 +1,4 @@
+// The below are mutators, this file should also provide methods.
 export default {
     fileTitle () {
         return this.file.data.attributes.frontMatter.title
