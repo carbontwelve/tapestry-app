@@ -38,36 +38,16 @@
                     </tr>
                 </thead>
                 <tbody v-for="item in content">
-                    <tr>
-                        <td style="width: 1.5rem; vertical-align: middle; text-align: center">
-                            <span class="icon is-small" style="vertical-align: middle;">
-                                <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <strong>{{ item.getTitle() }}</strong>
-                            <span class="is-block content-actions">
-                                <router-link :to="{name: 'ContentTypeFileEditor', params: {file: item.data.id}}" class="is-black">Edit</router-link> &ndash;
-                                <a class="is-danger">Delete</a> &ndash;
-                                <a class="is-black">View</a> &ndash;
-                                <a class="is-black">{{ (item.isPublished() ? 'Publish' : 'Unpublish') }}</a> &ndash;
-                                <a class="is-black">Clone</a>
-                            </span>
-                        </td>
-                        <td>
-                            <span class="is-block" v-if="item.data.attributes.draft">Last Modified:</span>
-                            <span class="is-block" v-if="!item.data.attributes.draft">Published:</span>
-                            {{ item.getDate() }}
-                        </td>
-                    </tr>
+                    <TableRow :file="item"></TableRow>
                 </tbody>
             </table>
         </loading-screen>
     </div>
 </template>
 
-<script>
+<script type="text/babel">
     import LoadingScreen from '../components/layout/LoadingScreen'
+    import TableRow from '../components/UI/ContentTypeContent/TableRow'
     import File from '../models/file'
     export default {
         name: 'ContentTypeContent',
@@ -78,7 +58,8 @@
             }
         },
         components: {
-            LoadingScreen
+            LoadingScreen,
+            TableRow
         },
         created () {
             this.fetchData()
