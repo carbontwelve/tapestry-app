@@ -42,6 +42,14 @@ const actions = {
             tmp.order[value.attributes.contentType].push(value.id)
         })
         commit(types.SYNC_FILES_FROM_API, tmp)
+    },
+    setSelectedFile ({state, dispatch, commit}, payload) {
+        return new Promise((resolve, reject) => {
+            if (!state.items[payload.contentType][payload.file]) {
+                reject('File not found for [' + payload.contentType + '/' + payload.file + ']')
+            }
+            resolve(commit(types.SET_SELECTED_FILE, state.items[payload.contentType][payload.file]))
+        })
     }
 }
 

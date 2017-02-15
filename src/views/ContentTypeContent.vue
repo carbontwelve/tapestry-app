@@ -48,13 +48,13 @@
 <script type="text/babel">
     import LoadingScreen from '../components/layout/LoadingScreen'
     import TableRow from '../components/UI/ContentTypeContent/TableRow'
-    import File from '../models/file'
+    import {mapState} from 'vuex'
+    // import File from '../models/file'
     export default {
         name: 'ContentTypeContent',
         data () {
             return {
-                isLoading: true,
-                content: []
+                isLoading: false
             }
         },
         components: {
@@ -67,25 +67,34 @@
         watch: {
             '$route': 'fetchData'
         },
+        computed: {
+            ...mapState(['files']),
+            content: function () {
+                return this.files.items[this.$route.params.contentType]
+            }
+        },
         methods: {
             doFileAction (e) {
+                if (e.action === 'publish') {
+                    // ...
+                }
                 console.log(e)
             },
             fetchData () {
-                let _vm = this
-                this.$getProjectContentType().then((response) => {
-                    let d = response.data
-                    let content = []
-                    for (let i = 0; i <= d.data.attributes.files.length; i++) {
-                        let fileRelationship = d.data.relationships[d.data.attributes.files[i]]
-                        if (fileRelationship) {
-                            content.push(new File(fileRelationship))
-                        }
-                    }
-                    _vm.content = content
-                }).then(() => {
-                    _vm.isLoading = false
-                })
+                // let _vm = this
+                // this.$getProjectContentType().then((response) => {
+                //     let d = response.data
+                //     let content = []
+                //     for (let i = 0; i <= d.data.attributes.files.length; i++) {
+                //         let fileRelationship = d.data.relationships[d.data.attributes.files[i]]
+                //         if (fileRelationship) {
+                //             content.push(new File(fileRelationship))
+                //         }
+                //     }
+                //     _vm.content = content
+                // }).then(() => {
+                //     _vm.isLoading = false
+                // })
             }
         }
     }

@@ -6,12 +6,12 @@
         <td>
             <strong>{{ fileTitle() }}</strong>
             <span class="is-block content-actions">
-                <router-link :to="{name: 'ContentTypeFileEditor', params: {file: file.data.id}}" class="is-black">Edit</router-link> &ndash;
-                <a class="is-danger" @click="$emit('file-action', {id: file.data.id, action: 'delete'})">Delete</a> &ndash;
+                <router-link :to="{name: 'ContentTypeFileEditor', params: {file: file.id}}" class="is-black">Edit</router-link> &ndash;
+                <a class="is-danger" @click="$emit('file-action', {id: file.id, action: 'delete'})">Delete</a> &ndash;
                 <a class="is-black">View</a> &ndash;
-                <a class="is-black" v-if="!isScheduled() && !isPublished()" @click="$emit('file-action', {id: file.data.id, action: 'publish'})">Publish Now</a>
-                <a class="is-black" v-if="isPublished()" @click="$emit('file-action', {id: file.data.id, action: 'unpublish'})">Unpublish</a> &ndash;
-                <a class="is-black" @click="$emit('file-action', {id: file.data.id, action: 'clone'})">Clone</a>
+                <a class="is-black" v-if="!isScheduled() && !isPublished()" @click="$emit('file-action', {id: file.id, action: 'publish'})">Publish Now</a>
+                <a class="is-black" v-if="isPublished()" @click="$emit('file-action', {id: file.id, action: 'unpublish'})">Unpublish</a> &ndash;
+                <a class="is-black" @click="$emit('file-action', {id: file.id, action: 'clone'})">Clone</a>
             </span>
         </td>
         <td>

@@ -76,7 +76,17 @@ apiSync.install = function (Vue) {
                     ]
                 }))
             }
+
             this.$store.dispatch('setMenuItems', menu)
+            return selectedProject
+        }).then((selectedProject) => {
+            console.log('Syncing Project Files [' + selectedProject.id + '/files]')
+            return this.axios({
+                method: 'get',
+                url: 'project/' + selectedProject.id + '/files'
+            })
+        }).then((response) => {
+            this.$store.dispatch('setFilesPayload', response.data)
         }).catch(() => {
             // @todo catch error and do something intelligent
         })

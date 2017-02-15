@@ -165,6 +165,7 @@
     import InputTag from 'vue-input-tag'
     import Datepicker from 'vue-bulma-datepicker'
     import FileTrait from '../traits/file'
+    import {mapState} from 'vuex'
     export default {
         name: 'FileEditor',
         components: {
@@ -197,6 +198,7 @@
             }
         },
         computed: {
+            ...mapState(['files']),
             fileName () {
                 return this.file.data.attributes.name + '.' + this.file.data.attributes.ext
             },
@@ -265,6 +267,21 @@
             fetchData () {
                 let _vm = this
                 let tempFile
+                this.$store.dispatch('setSelectedFile', {
+                    contentType: this.$route.params.contentType,
+                    file: this.$route.params.file
+                }).then(() => {
+                    let f = _vm.files.selected
+                    let mode = CodeMirrorMeta.findModeByExtension(f.attributes.ext)
+                    if (mode) {
+                        _vm.editorOption.mode.name = mode.mode
+                    }
+                    tempFile = f
+                }).catch((err) => {
+                    console.error(err.message)
+                    // File doesn't exist, do something intelligent
+                })
+
                 this.$getProjectFile().then((response) => {
                     let f = response.data
                     let mode = CodeMirrorMeta.findModeByExtension(f.data.attributes.ext)

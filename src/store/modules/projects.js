@@ -14,7 +14,7 @@ const state = {
 
 const mutations = {
     [types.SYNC_PROJECTS_WITH_API] (state, payload) {
-        state.lastSynced = Date.now()
+        state.lastSynced = Math.floor(Date.now() / 1000)
         state.all = payload
     },
     [types.ADD_PROJECT] (state, payload) {
