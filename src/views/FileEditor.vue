@@ -4,7 +4,7 @@
             <nav class="nav" style="z-index: auto">
                 <div class="toolbar flex">
                     <p class="nav-item control has-addons flex">
-                        <input class="input flex" type="text" placeholder="file title" v-model="file.data.attributes.frontMatter.title">
+                        <input class="input flex" type="text" placeholder="file title" v-model="title">
                         <a class="button is-primary" :class="{'is-loading': isSaving, 'is-disabled': !isModified}" @click="saveChanges">
                             <span class="icon">
                                 <i class="fa fa-save" aria-hidden="true"></i>
@@ -17,7 +17,7 @@
             <div class="columns">
                 <div class="column is-three-quarters" style="padding-bottom: 0;">
                     <div class="codemirror">
-                        <codemirror v-model="file.data.attributes.fileContent" :options="editorOption"></codemirror>
+                        <codemirror v-model="fileContent" :options="editorOption"></codemirror>
                     </div>
                 </div>
                 <div class="column">
@@ -63,10 +63,10 @@
                         </header>
                         <div class="card-content">
                             <div class="content">
-                                <template v-for="(classifications, taxonomy) in taxonomies">
+                                <template v-for="(taxonomy, classifications) in taxonomies">
                                     <label class="label">{{ taxonomy + ':' }}</label>
                                     <p class="control">
-                                        <input-tag :on-change="updateTaxonomies(taxonomy, classifications)" :tags="taxonomies[taxonomy]" :placeholder="taxonomy"></input-tag>
+                                        <input-tag :on-change="updateTaxonomies(taxonomy, classifications)" :tags="file.attributes.frontMatter[taxonomy]" :placeholder="taxonomy"></input-tag>
                                     </p>
                                 </template>
                             </div>
@@ -93,7 +93,7 @@
                                         <th>Value</th>
                                     </tr>
                                     </thead>
-                                    <tbody v-for="(item, index) in file.data.attributes.frontMatter">
+                                    <tbody v-for="(item, index) in file.attributes.frontMatter">
                                     <tr>
                                         <td>{{ index }}</td>
                                         <td>{{ item }}</td>
@@ -157,7 +157,6 @@
 </template>
 
 <script type="text/babel">
-    import { capitalize } from '../strings'
     import CodeMirrorMeta from 'vue-codemirror/metas'
     import { codemirror } from 'vue-codemirror'
     import LoadingScreen from '../components/layout/LoadingScreen'
@@ -192,18 +191,47 @@
                 isLoading: true,
                 isSaving: false,
                 isModified: false,
-                file: null,
-                scheduleTime: '',
-                taxonomies: {}
+                scheduleTime: ''
             }
         },
         computed: {
-            ...mapState(['files']),
+            ...mapState({
+                file: state => state.workspace.files.selected,
+                taxonomies (state) {
+                    return state.workspace.contentTypes.items[this.$route.params.contentType].attributes.taxonomies
+                }
+            }),
             fileName () {
-                return this.file.data.attributes.name + '.' + this.file.data.attributes.ext
+                return this.file.attributes.name + '.' + this.file.attributes.ext
             },
             lastModified () {
-                return Math.floor(this.file.data.attributes.last_modified * 1000)
+                return Math.floor(this.file.attributes.last_modified * 1000)
+            },
+            title: {
+                get: function () {
+                    return this.$store.state.workspace.files.selected.attributes.frontMatter.title
+                },
+                set: function (value) {
+                    this.$store.dispatch('mutateSelectedFile', {
+                        attributes: {
+                            frontMatter: {
+                                title: value
+                            }
+                        }
+                    })
+                }
+            },
+            fileContent: {
+                get: function () {
+                    return this.$store.state.workspace.files.selected.attributes.fileContent
+                },
+                set: function (value) {
+                    this.$store.dispatch('mutateSelectedFile', {
+                        attributes: {
+                            fileContent: value
+                        }
+                    })
+                }
             }
         },
         created () {
@@ -216,8 +244,19 @@
             updateTaxonomies (taxonomy, oC) {
                 let _vm = this
                 return (nC) => {
-                    oC = nC
-                    _vm.file.data.attributes.frontMatter[taxonomy.toLowerCase()] = nC
+                    // oC = nC
+
+                    console.log(nC)
+
+                    _vm.$store.dispatch('mutateSelectedFile', {
+                        attributes: {
+                            frontMatter: {
+                                $taxonomy: nC
+                            }
+                        }
+                    })
+
+                    // _vm.file.attributes.frontMatter[taxonomy.toLowerCase()] = nC
                 }
             },
             ...FileTrait,
@@ -231,25 +270,49 @@
                 this.settingSchedule = false
             },
             schedule () {
-                this.file.data.attributes.frontMatter.draft = false
-                this.file.data.attributes.frontMatter.date = 1513036800
+                this.$store.dispatch('mutateSelectedFile', {
+                    attributes: {
+                        frontMatter: {
+                            draft: false,
+                            date: 1513036800
+                        }
+                    }
+                })
                 this.settingSchedule = false
             },
             cancelSchedule () {
                 this.settingSchedule = false
                 this.scheduleTime = null
-                this.file.data.attributes.frontMatter.draft = true
-                this.file.data.attributes.frontMatter.date = null
+                this.$store.dispatch('mutateSelectedFile', {
+                    attributes: {
+                        frontMatter: {
+                            draft: true,
+                            date: null
+                        }
+                    }
+                })
             },
             publish () {
                 this.settingSchedule = false
-                this.file.data.attributes.frontMatter.draft = false
-                this.file.data.attributes.frontMatter.date = Math.floor(Date.now() / 1000)
+                this.$store.dispatch('mutateSelectedFile', {
+                    attributes: {
+                        frontMatter: {
+                            draft: false,
+                            date: Math.floor(Date.now() / 1000)
+                        }
+                    }
+                })
             },
             unpublish () {
                 this.settingSchedule = false
-                this.file.data.attributes.frontMatter.draft = true
-                this.file.data.attributes.frontMatter.date = null
+                this.$store.dispatch('mutateSelectedFile', {
+                    attributes: {
+                        frontMatter: {
+                            draft: true,
+                            date: null
+                        }
+                    }
+                })
             },
             saveChanges () {
                 let _vm = this
@@ -266,52 +329,25 @@
             },
             fetchData () {
                 let _vm = this
-                let tempFile
                 this.$store.dispatch('setSelectedFile', {
                     contentType: this.$route.params.contentType,
                     file: this.$route.params.file
                 }).then(() => {
-                    let f = _vm.files.selected
-                    let mode = CodeMirrorMeta.findModeByExtension(f.attributes.ext)
+                    let mode = CodeMirrorMeta.findModeByExtension(_vm.file.attributes.ext)
                     if (mode) {
                         _vm.editorOption.mode.name = mode.mode
                     }
-                    tempFile = f
-                }).catch((err) => {
-                    console.error(err.message)
-                    // File doesn't exist, do something intelligent
-                })
-
-                this.$getProjectFile().then((response) => {
-                    let f = response.data
-                    let mode = CodeMirrorMeta.findModeByExtension(f.data.attributes.ext)
-                    if (mode) {
-                        _vm.editorOption.mode.name = mode.mode
-                    }
-                    tempFile = f
-                    return _vm.$getProjectContentType()
-                }).then((response) => {
-                    let taxonomies = response.data.data.attributes.taxonomies
-                    if (taxonomies) {
-                        let tmp = {}
-                        for (let i = 0; i < taxonomies.length; i++) {
-                            let fileClassifications = tempFile.data.attributes.frontMatter[taxonomies[i]]
-                            if (!fileClassifications) {
-                                tempFile.data.attributes.frontMatter[taxonomies[i]] = []
-                            }
-                            tmp[capitalize(taxonomies[i])] = (JSON.parse(JSON.stringify(fileClassifications)))
-                        }
-                        _vm.taxonomies = tmp
-                    }
-                    _vm.file = tempFile
                 }).then(() => {
-                    _vm.$watch('file.data', function () {
+                    _vm.$watch('file', function () {
                         if (_vm.isModified || _vm.isLoading) {
                             return
                         }
                         _vm.isModified = true
                     }, {deep: true})
                     _vm.isLoading = false
+                }).catch((err) => {
+                    console.error(err.message)
+                    // File doesn't exist, do something intelligent
                 })
             }
         }
