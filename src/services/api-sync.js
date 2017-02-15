@@ -80,13 +80,21 @@ apiSync.install = function (Vue) {
             this.$store.dispatch('setMenuItems', menu)
             return selectedProject
         }).then((selectedProject) => {
-            console.log('Syncing Project Files [' + selectedProject.id + '/files]')
+            console.log('Syncing Workspace Files [' + selectedProject.id + '/files]')
             return this.axios({
                 method: 'get',
                 url: 'project/' + selectedProject.id + '/files'
             })
         }).then((response) => {
-            this.$store.dispatch('setFilesPayload', response.data)
+            this.$store.dispatch('setWSFilesPayload', response.data)
+        }).then(() => {
+            console.log('Syncing Workspace Content Types [' + selectedProject.id + '/content-types]')
+            return this.axios({
+                method: 'get',
+                url: 'project/' + selectedProject.id + '/content-types'
+            })
+        }).then((response) => {
+            this.$store.dispatch('setWSContentTypePayload', response.data)
         }).catch(() => {
             // @todo catch error and do something intelligent
         })

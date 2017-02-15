@@ -68,16 +68,13 @@
             '$route': 'fetchData'
         },
         computed: {
-            ...mapState(['files']),
+            ...mapState(['workspace']),
             content: function () {
-                return this.files.items[this.$route.params.contentType]
+                return this.workspace.files.items[this.$route.params.contentType]
             }
         },
         methods: {
             doFileAction (e) {
-                if (e.action === 'publish') {
-                    // ...
-                }
                 console.log(e)
             },
             fetchData () {
