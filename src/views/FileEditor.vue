@@ -66,7 +66,7 @@
                                 <template v-for="(classifications, taxonomy) in taxonomies">
                                     <label class="label">{{ taxonomy + ':' }}</label>
                                     <p class="control">
-                                        <input-tag :on-change="updateTaxonomies(taxonomy, classifications)" :tags="classifications" :placeholder="taxonomy"></input-tag>
+                                        <input-tag :on-change="updateTaxonomies(taxonomy)" :tags="classifications" :placeholder="taxonomy"></input-tag>
                                     </p>
                                 </template>
                             </div>
@@ -257,7 +257,7 @@
             '$route': 'fetchData'
         },
         methods: {
-            updateTaxonomies (taxonomy, oC) {
+            updateTaxonomies (taxonomy) {
                 let _vm = this
                 return (nC) => {
                     _vm.$store.dispatch('mutateSelectedFile', JSON.stringify({['attributes.frontMatter.' + taxonomy]: nC}))
