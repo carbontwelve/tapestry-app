@@ -63,10 +63,10 @@
                         </header>
                         <div class="card-content">
                             <div class="content">
-                                <template v-for="(taxonomy, classifications) in taxonomies">
+                                <template v-for="(classifications, taxonomy) in taxonomies">
                                     <label class="label">{{ taxonomy + ':' }}</label>
                                     <p class="control">
-                                        <input-tag :on-change="updateTaxonomies(taxonomy, classifications)" :tags="file.attributes.frontMatter[taxonomy]" :placeholder="taxonomy"></input-tag>
+                                        <input-tag :on-change="updateTaxonomies(taxonomy, classifications)" :tags="classifications" :placeholder="taxonomy"></input-tag>
                                     </p>
                                 </template>
                             </div>
@@ -196,16 +196,31 @@
         },
         computed: {
             ...mapState({
-                file: state => state.workspace.files.selected,
-                taxonomies (state) {
-                    return state.workspace.contentTypes.items[this.$route.params.contentType].attributes.taxonomies
-                }
+                file: state => state.workspace.files.selected
             }),
             fileName () {
                 return this.file.attributes.name + '.' + this.file.attributes.ext
             },
             lastModified () {
                 return Math.floor(this.file.attributes.last_modified * 1000)
+            },
+            taxonomies: {
+                get: function () {
+                    let tmp = {}
+                    let taxonomies = this.$store.state.workspace.contentTypes.items[this.$route.params.contentType].attributes.taxonomies
+                    taxonomies.forEach((taxonomy) => {
+                        let classifications = this.$store.state.workspace.files.selected.attributes.frontMatter[taxonomy]
+                        if (!classifications) {
+                            tmp[taxonomy] = []
+                        } else {
+                            tmp[taxonomy] = JSON.parse(JSON.stringify(classifications))
+                        }
+                    })
+                    return tmp
+                },
+                set: function (value) {
+                    // I couldn't seem to get this to invoke...
+                }
             },
             title: {
                 get: function () {
@@ -243,20 +258,14 @@
         methods: {
             updateTaxonomies (taxonomy, oC) {
                 let _vm = this
+                let mutation = {
+                    attributes: {
+                        frontMatter: {}
+                    }
+                }
                 return (nC) => {
-                    // oC = nC
-
-                    console.log(nC)
-
-                    _vm.$store.dispatch('mutateSelectedFile', {
-                        attributes: {
-                            frontMatter: {
-                                $taxonomy: nC
-                            }
-                        }
-                    })
-
-                    // _vm.file.attributes.frontMatter[taxonomy.toLowerCase()] = nC
+                    mutation.attributes.frontMatter[taxonomy] = nC
+                    _vm.$store.dispatch('mutateSelectedFile', mutation)
                 }
             },
             ...FileTrait,
