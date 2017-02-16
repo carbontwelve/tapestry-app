@@ -76,6 +76,10 @@
         methods: {
             doFileAction (e) {
                 console.log(e)
+                this.$store.dispatch('applyActionToFile', e).then((f) => {
+                    console.log('update: ' + f.links.self)
+                    console.log('dispatched!')
+                })
             },
             fetchData () {
                 // let _vm = this

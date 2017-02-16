@@ -127,7 +127,13 @@ const actions = {
             let file = {}
             if (payload.file) {
                 file = payload.file
+            } else if (payload.id) {
+                let parts = payload.id.split('/')
+                if (state.files.items[parts[0]][parts[1]]) {
+                    file = state.files.items[parts[0]][parts[1]]
+                }
             }
+
             switch (payload.action) {
             case 'schedule':
                 file = merge(file, {
@@ -161,14 +167,21 @@ const actions = {
                 })
                 break
             }
+            // If we have not been passed a file then operate on selected file
             if (!payload.file && state.files.selected) {
                 commit(types.MUTATE_SELECTED_WORKSPACE_FILE, file)
-                resolve()
+                resolve(state.files.selected)
             }
-            if (payload.id && payload.attributes && payload.attributes.contentType) {
+
+            // If we have been passed a file then search for and operate on file items
+            if (
+                (payload.id && payload.attributes && payload.attributes.contentType) ||
+                (payload.id.indexOf('/') && file.id && file.attributes && file.attributes.contentType)
+            ) {
                 commit(types.MUTATE_WORKSPACE_FILE, file)
-                resolve()
+                resolve(file)
             }
+
             reject('File could not be found in store.')
         })
     },
