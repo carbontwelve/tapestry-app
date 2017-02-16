@@ -219,6 +219,7 @@
                     return tmp
                 },
                 set: function (value) {
+                    console.log('set taxonomies')
                     // I couldn't seem to get this to invoke...
                 }
             },
@@ -258,14 +259,8 @@
         methods: {
             updateTaxonomies (taxonomy, oC) {
                 let _vm = this
-                let mutation = {
-                    attributes: {
-                        frontMatter: {}
-                    }
-                }
                 return (nC) => {
-                    mutation.attributes.frontMatter[taxonomy] = nC
-                    _vm.$store.dispatch('mutateSelectedFile', mutation)
+                    _vm.$store.dispatch('mutateSelectedFile', JSON.stringify({['attributes.frontMatter.' + taxonomy]: nC}))
                 }
             },
             ...FileTrait,
@@ -279,55 +274,37 @@
                 this.settingSchedule = false
             },
             schedule () {
-                this.$store.dispatch('mutateSelectedFile', {
-                    attributes: {
-                        frontMatter: {
-                            draft: false,
-                            date: 1513036800
-                        }
-                    }
+                this.$store.dispatch('applyActionToFile', {
+                    action: 'schedule'
                 })
                 this.settingSchedule = false
             },
             cancelSchedule () {
                 this.settingSchedule = false
                 this.scheduleTime = null
-                this.$store.dispatch('mutateSelectedFile', {
-                    attributes: {
-                        frontMatter: {
-                            draft: true,
-                            date: null
-                        }
-                    }
+                this.$store.dispatch('applyActionToFile', {
+                    action: 'unSchedule'
                 })
             },
             publish () {
                 this.settingSchedule = false
-                this.$store.dispatch('mutateSelectedFile', {
-                    attributes: {
-                        frontMatter: {
-                            draft: false,
-                            date: Math.floor(Date.now() / 1000)
-                        }
-                    }
+                this.$store.dispatch('applyActionToFile', {
+                    action: 'publish'
                 })
             },
             unpublish () {
                 this.settingSchedule = false
-                this.$store.dispatch('mutateSelectedFile', {
-                    attributes: {
-                        frontMatter: {
-                            draft: true,
-                            date: null
-                        }
-                    }
+                this.$store.dispatch('applyActionToFile', {
+                    action: 'unPublish'
                 })
             },
             saveChanges () {
                 let _vm = this
                 this.isSaving = true
                 this.$setProjectFile(this.file).then((response) => {
-                    _vm.file = response.data
+                    let newFile = response.data.data
+                    newFile.dirty = false
+                    _vm.$store.dispatch('mutateSelectedFile', newFile)
                 }).then(() => {
                     _vm.isSaving = false
                     _vm.isModified = false
