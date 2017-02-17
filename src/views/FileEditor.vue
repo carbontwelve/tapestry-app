@@ -119,32 +119,32 @@
                             <div class="content">
                                 <table class="table is-bordered is-stripped is-narrow" style="margin-bottom: 0;">
                                     <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Value</th>
-                                        </tr>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Value</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Filename</td>
-                                            <td>{{ fileName }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Last Modified</td>
-                                            <td><nice-date :date="lastModified"></nice-date></td>
-                                        </tr>
-                                        <tr v-if="isPublished()">
-                                            <td>Published</td>
-                                            <td><nice-date :date="fileDate()"></nice-date></td>
-                                        </tr>
-                                        <tr v-if="isScheduled()">
-                                            <td>Scheduled</td>
-                                            <td><nice-date :date="fileDate()"></nice-date></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Revision</td>
-                                            <td>@todo</td>
-                                        </tr>
+                                    <tr>
+                                        <td>Filename</td>
+                                        <td>{{ fileName }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last Modified</td>
+                                        <td><nice-date :date="lastModified"></nice-date></td>
+                                    </tr>
+                                    <tr v-if="isPublished()">
+                                        <td>Published</td>
+                                        <td><nice-date :date="fileDate()"></nice-date></td>
+                                    </tr>
+                                    <tr v-if="isScheduled()">
+                                        <td>Scheduled</td>
+                                        <td><nice-date :date="fileDate()"></nice-date></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Revision</td>
+                                        <td>@todo</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -209,7 +209,7 @@
                     let tmp = {}
                     let taxonomies = this.$store.state.workspace.contentTypes.items[this.$route.params.contentType].attributes.taxonomies
                     taxonomies.forEach((taxonomy) => {
-                        let classifications = this.$store.state.workspace.files.selected.attributes.frontMatter[taxonomy]
+                        let classifications = this.file.attributes.frontMatter[taxonomy]
                         if (!classifications) {
                             tmp[taxonomy] = []
                         } else {
@@ -225,7 +225,7 @@
             },
             title: {
                 get: function () {
-                    return this.$store.state.workspace.files.selected.attributes.frontMatter.title
+                    return this.file.attributes.frontMatter.title
                 },
                 set: function (value) {
                     this.$store.dispatch('mutateSelectedFile', {
@@ -239,7 +239,7 @@
             },
             fileContent: {
                 get: function () {
-                    return this.$store.state.workspace.files.selected.attributes.fileContent
+                    return this.file.attributes.fileContent
                 },
                 set: function (value) {
                     this.$store.dispatch('mutateSelectedFile', {
@@ -260,7 +260,9 @@
             updateTaxonomies (taxonomy) {
                 let _vm = this
                 return (nC) => {
-                    _vm.$store.dispatch('mutateSelectedFile', JSON.stringify({['attributes.frontMatter.' + taxonomy]: nC}))
+                    _vm.$store.dispatch('mutateSelectedFile', JSON.stringify({
+                        ['attributes.frontMatter.' + taxonomy]: nC
+                    }))
                 }
             },
             ...FileTrait,

@@ -11,8 +11,8 @@
           <span></span>
         </span>
         <div class="nav-right nav-menu">
+            <workspace-sync-status></workspace-sync-status>
             <project-selector></project-selector>
-
             <span class="nav-item">
               <a class="button" @click="nuke">
                 <span class="icon">
@@ -26,10 +26,12 @@
 
 <script type="text/babel">
     import ProjectSelector from '../project/ProjectSelector'
+    import WorkspaceSyncStatus from '../UI/Nav/WorkspaceSyncStatus'
     export default {
         name: 'navbar',
         components: {
-            ProjectSelector
+            ProjectSelector,
+            WorkspaceSyncStatus
         },
         methods: {
             nuke () {

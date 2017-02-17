@@ -26,7 +26,8 @@ const types = {
     MUTATE_WORKSPACE_FILE: 'MUTATE_WORKSPACE_FILE',
     SET_SELECTED_WORKSPACE_FILE: 'SET_SELECTED_WORKSPACE_FILE',
     MUTATE_SELECTED_WORKSPACE_FILE: 'MUTATE_SELECTED_WORKSPACE_FILE',
-    MUTATE_WORKSPACE_CONTENT_TYPE: 'MUTATE_WORKSPACE_CONTENT_TYPE'
+    MUTATE_WORKSPACE_CONTENT_TYPE: 'MUTATE_WORKSPACE_CONTENT_TYPE',
+    SET_WORKSPACE_SYNC_STATUS: 'SET_WORKSPACE_SYNC_STATUS'
 }
 
 const state = {
@@ -41,10 +42,14 @@ const state = {
         selected: null,
         items: {}
     },
-    lastSynced: 0
+    lastSynced: 0,
+    pendingSync: false // This is primarily for when an offline mode is written; if ajax fails the change should be queued and pendingSync set to true
 }
 
 const mutations = {
+    [types.SET_WORKSPACE_SYNC_STATUS] (state, payload) {
+        state.pendingSync = payload
+    },
     [types.SYNC_WORKSPACE_FILES_FROM_API] (state, payload) {
         state.files.items = payload.items
         state.files.order = payload.order
@@ -205,7 +210,15 @@ const actions = {
 }
 
 const getters = {
-    // ...
+    workspaceSyncStatus: (state, getters) => {
+        if (!getters.hasSelectedProject) {
+            return null
+        }
+        return {
+            pendingSync: state.pendingSync,
+            lastSynced: state.lastSynced
+        }
+    }
 }
 
 export default {state, mutations, actions, getters, types}
