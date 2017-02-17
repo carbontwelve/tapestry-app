@@ -6,12 +6,12 @@
         <td>
             <strong>{{ fileTitle() }}</strong>
             <span class="is-block content-actions">
-                <router-link :to="{name: 'ContentTypeFileEditor', params: {file: file.id}}" class="is-black">Edit</router-link> &ndash;
-                <a class="is-danger" @click="$emit('file-action', {id: file.attributes.contentType + '/' + file.id, action: 'delete'})">Delete</a> &ndash;
-                <a class="is-black">View</a> &ndash;
-                <a class="is-black" v-if="!isScheduled() && !isPublished()" @click="$emit('file-action', {id: file.attributes.contentType + '/' + file.id, action: 'publish'})">Publish Now</a>
-                <a class="is-black" v-if="isPublished()" @click="$emit('file-action', {id: file.attributes.contentType + '/' + file.id, action: 'unPublish'})">Unpublish</a> &ndash;
-                <a class="is-black" @click="$emit('file-action', {id: file.attributes.contentType + '/' + file.id, action: 'clone'})">Clone</a>
+                <router-link class="button is-outlined is-small" :to="{name: 'ContentTypeFileEditor', params: {file: file.id}}" :disabled="doingAction">Edit</router-link>
+                <a class="is-danger button is-outlined is-small" @click="doFileAction({id: file.attributes.contentType + '/' + file.id, action: 'delete'})" :disabled="doingAction">Delete</a>
+                <a class="button is-outlined is-small" :disabled="doingAction">View</a>
+                <a class="button is-outlined is-small" v-if="!isScheduled() && !isPublished()" @click="doFileAction({id: file.attributes.contentType + '/' + file.id, action: 'publish'})" :class="{'is-loading': (currentAction === 'unPublish')}" :disabled="doingAction">Publish Now</a>
+                <a class="button is-outlined is-small" v-if="isPublished()" @click="doFileAction({id: file.attributes.contentType + '/' + file.id, action: 'unPublish'})" :class="{'is-loading': (currentAction === 'publish')}" :disabled="doingAction">Unpublish</a>
+                <a class="button is-outlined is-small" @click="doFileAction('file-action', {id: file.attributes.contentType + '/' + file.id, action: 'clone'})" :disabled="doingAction">Clone</a>
             </span>
         </td>
         <td>
@@ -28,6 +28,12 @@
     import NiceDate from '../NiceDate'
     export default {
         name: 'ContentTypeContentTableRow',
+        data: () => {
+            return {
+                doingAction: false,
+                currentAction: null
+            }
+        },
         props: {
             file: {
                 type: Object,
@@ -38,7 +44,27 @@
             NiceDate
         },
         methods: {
-            ...FileTrait
+            ...FileTrait,
+            doFileAction (e) {
+                if (this.doingAction) {
+                    return
+                }
+                let _vm = this
+                _vm.doingAction = true
+                _vm.currentAction = e.action
+                this.$store.dispatch('applyActionToFile', e).then((f) => {
+                    this.$setProjectFile(f).then((response) => {
+                        _vm.doingAction = false
+                        _vm.currentAction = null
+                    })
+                })
+            }
         }
     }
 </script>
+
+<style lang="less" rel="stylesheet/less">
+    a.button{
+        text-decoration: none;
+    }
+</style>

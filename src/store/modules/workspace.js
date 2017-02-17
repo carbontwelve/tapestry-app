@@ -24,6 +24,7 @@ const types = {
     SYNC_WORKSPACE_FILES_FROM_API: 'SYNC_WORKSPACE_FILES_FROM_API',
     SYNC_WORKSPACE_CONTENTTYPES_FROM_API: 'SYNC_WORKSPACE_CONTENTTYPES_FROM_API',
     MUTATE_WORKSPACE_FILE: 'MUTATE_WORKSPACE_FILE',
+    SET_WORKSPACE_FILE: 'SET_WORKSPACE_FILE',
     SET_SELECTED_WORKSPACE_FILE: 'SET_SELECTED_WORKSPACE_FILE',
     MUTATE_SELECTED_WORKSPACE_FILE: 'MUTATE_SELECTED_WORKSPACE_FILE',
     MUTATE_WORKSPACE_CONTENT_TYPE: 'MUTATE_WORKSPACE_CONTENT_TYPE',
@@ -50,6 +51,9 @@ const mutations = {
     [types.SET_WORKSPACE_SYNC_STATUS] (state, payload) {
         state.pendingSync = payload
     },
+    [types.SET_WORKSPACE_FILE] (state, payload) {
+        state.files.items[payload.attributes.contentType][payload.id] = payload
+    },
     [types.SYNC_WORKSPACE_FILES_FROM_API] (state, payload) {
         state.files.items = payload.items
         state.files.order = payload.order
@@ -60,8 +64,12 @@ const mutations = {
     },
     [types.MUTATE_WORKSPACE_FILE] (state, payload) {
         let f = state.files.items[payload.attributes.contentType][payload.id]
-        f.dirty = true
-        state.files.items[payload.attributes.contentType][payload.id] = merge(f, payload)
+        payload.dirty = true
+        if (f) {
+            state.files.items[payload.attributes.contentType][payload.id] = merge(f, payload)
+        } else {
+            state.files.items[payload.attributes.contentType][payload.id] = payload
+        }
     },
     [types.MUTATE_SELECTED_WORKSPACE_FILE] (state, payload) {
         let f = state.files.selected
@@ -121,11 +129,22 @@ const actions = {
     },
     setSelectedFile ({state, dispatch, commit}, payload) {
         return new Promise((resolve, reject) => {
-            if (!state.files.items[payload.contentType][payload.file]) {
-                reject('File not found for [' + payload.contentType + '/' + payload.file + ']')
+            if (payload === null) {
+                resolve(commit(types.SET_SELECTED_WORKSPACE_FILE, null))
+                return
             }
-            resolve(commit(types.SET_SELECTED_WORKSPACE_FILE, state.files.items[payload.contentType][payload.file]))
+            if (payload.file && payload.contentType) {
+                if (!state.files.items[payload.contentType][payload.file]) {
+                    reject('File not found for [' + payload.contentType + '/' + payload.file + ']')
+                }
+                resolve(commit(types.SET_SELECTED_WORKSPACE_FILE, state.files.items[payload.contentType][payload.file]))
+                return
+            }
+            resolve(commit(types.SET_SELECTED_WORKSPACE_FILE, payload))
         })
+    },
+    setWSFile ({state, dispatch, commit}, payload) {
+        commit(types.SET_WORKSPACE_FILE, payload)
     },
     applyActionToFile ({state, dispatch, commit}, payload) {
         return new Promise((resolve, reject) => {
@@ -175,7 +194,7 @@ const actions = {
             // If we have not been passed a file then operate on selected file
             if (!payload.file && state.files.selected) {
                 commit(types.MUTATE_SELECTED_WORKSPACE_FILE, file)
-                resolve(state.files.selected)
+                return resolve(state.files.selected)
             }
 
             // If we have been passed a file then search for and operate on file items
@@ -184,10 +203,10 @@ const actions = {
                 (payload.id.indexOf('/') && file.id && file.attributes && file.attributes.contentType)
             ) {
                 commit(types.MUTATE_WORKSPACE_FILE, file)
-                resolve(file)
+                return resolve(file)
             }
 
-            reject('File could not be found in store.')
+            return reject('File could not be found in store.')
         })
     },
     mutateSelectedFile ({state, dispatch, commit}, payload) {
@@ -210,6 +229,9 @@ const actions = {
 }
 
 const getters = {
+    workspaceSelectedFile: (state, getters) => {
+        return state.files.selected
+    },
     workspaceSyncStatus: (state, getters) => {
         if (!getters.hasSelectedProject) {
             return null

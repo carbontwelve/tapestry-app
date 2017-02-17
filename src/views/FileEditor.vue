@@ -130,6 +130,10 @@
                                         <td>{{ fileName }}</td>
                                     </tr>
                                     <tr>
+                                        <td>Path</td>
+                                        <td>{{ file.attributes.path }}</td>
+                                    </tr>
+                                    <tr>
                                         <td>Last Modified</td>
                                         <td><nice-date :date="lastModified"></nice-date></td>
                                     </tr>
@@ -191,6 +195,7 @@
                 isLoading: true,
                 isSaving: false,
                 isModified: false,
+                isNewFile: false,
                 scheduleTime: ''
             }
         },
@@ -253,6 +258,10 @@
         created () {
             this.fetchData()
         },
+        destroyed () {
+            this.$store.dispatch('setWSFile', this.$store.getters.workspaceSelectedFile)
+            this.$store.dispatch('setSelectedFile', null)
+        },
         watch: {
             '$route': 'fetchData'
         },
@@ -307,6 +316,10 @@
                     let newFile = response.data.data
                     newFile.dirty = false
                     _vm.$store.dispatch('mutateSelectedFile', newFile)
+                    if (_vm.isNewFile) {
+                        _vm.$store.dispatch('setWSFile', newFile)
+                        _vm.isNewFile = false
+                    }
                 }).then(() => {
                     _vm.isSaving = false
                     _vm.isModified = false
@@ -316,11 +329,34 @@
                 })
             },
             fetchData () {
+                let file = this.$route.params.file
+                let contentType = this.$store.state.workspace.contentTypes.items[this.$route.params.contentType]
                 let _vm = this
-                this.$store.dispatch('setSelectedFile', {
-                    contentType: this.$route.params.contentType,
-                    file: this.$route.params.file
-                }).then(() => {
+                let f
+                if (file === 'new') {
+                    this.isNewFile = true
+                    f = this.$store.dispatch('setSelectedFile', {
+                        attributes: {
+                            contentType: contentType.id,
+                            date: Math.floor(Date.now() / 1000),
+                            ext: 'md',
+                            fileContent: '',
+                            frontMatter: {
+                                draft: true
+                            },
+                            name: 'untitled',
+                            path: contentType.attributes.path
+                        },
+                        id: '',
+                        type: 'file'
+                    })
+                } else {
+                    f = this.$store.dispatch('setSelectedFile', {
+                        contentType: contentType.id,
+                        file: file
+                    })
+                }
+                f.then(() => {
                     let mode = CodeMirrorMeta.findModeByExtension(_vm.file.attributes.ext)
                     if (mode) {
                         _vm.editorOption.mode.name = mode.mode
@@ -334,7 +370,7 @@
                     }, {deep: true})
                     _vm.isLoading = false
                 }).catch((err) => {
-                    console.error(err.message)
+                    console.error(err)
                     // File doesn't exist, do something intelligent
                 })
             }

@@ -128,18 +128,22 @@ apiSync.install = function (Vue) {
     Vue.prototype.$setProjectFile = function (f) {
         // A file will only contain a link to self if it exists, we can PUT to this end point to update
         // Otherwise we need to POST to /project/{projectUUID}/file
-        let selectedProject = this.$store.getters.getSelectedProject
         let config = {
             method: 'post',
-            url: 'project/' + selectedProject.id + '/file/',
+            url: '',
             data: {
                 file: f
             }
         }
-        if (f.links.self) {
+
+        if (f.links && f.links.self) {
             config.method = 'put'
             config.url = f.links.self
+        } else {
+            let selectedProject = this.$store.getters.getSelectedProject
+            config.url = 'project/' + selectedProject.id + '/file'
         }
+
         return this.axios(config).catch((err) => {
             window.alert(err.message)
             throw err

@@ -19,12 +19,10 @@
 
                 <div class="nav-right">
                     <p class="nav-item">
-                        <a class="button is-primary">
-                            <span class="icon">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                            </span>
+                        <router-link class="button is-primary" :to="{name: 'ContentTypeFileEditor', params: {file: 'new'}}">
+                            <span class="icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
                             <span>Create New</span>
-                        </a>
+                        </router-link>
                     </p>
                 </div>
             </nav>
@@ -38,7 +36,7 @@
                     </tr>
                 </thead>
                 <tbody v-for="item in content">
-                    <TableRow :file="item" v-on:file-action="doFileAction"></TableRow>
+                    <TableRow :file="item"></TableRow>
                 </tbody>
             </table>
         </loading-screen>
@@ -68,19 +66,14 @@
             '$route': 'fetchData'
         },
         computed: {
-            ...mapState(['workspace']),
-            content: function () {
-                return this.workspace.files.items[this.$route.params.contentType]
-            }
+            ...mapState({
+                content: function (state) {
+                    // debugger
+                    return state.workspace.files.items[this.$route.params.contentType]
+                }
+            })
         },
         methods: {
-            doFileAction (e) {
-                console.log(e)
-                this.$store.dispatch('applyActionToFile', e).then((f) => {
-                    console.log('update: ' + f.links.self)
-                    console.log('dispatched!')
-                })
-            },
             fetchData () {
                 // let _vm = this
                 // this.$getProjectContentType().then((response) => {
